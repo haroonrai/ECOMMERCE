@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Clinic Admin Portal | AURA Healthcare & Derma Labs{% endblock %}</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/main.css?v=2.0">
+  <link rel="stylesheet" href="/static/css/admin.css?v=2.0">
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-header">
+        <a href="/" class="brand-logo" style="font-size: 1.2rem;">
+          <div class="logo-icon" style="width: 28px; height: 28px; font-size: 0.9rem; background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-spa"></i></div>
+          <span>AURA<span style="color: #10b981;">HEALTHCARE</span></span>
+        </a>
+      </div>
+
+      <ul class="admin-nav">
+        <li>
+          <a href="/admin" class="admin-nav-link {% if request.path == '/admin' %}active{% endif %}">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="/admin/products" class="admin-nav-link {% if '/admin/products' in request.path %}active{% endif %}">
+            <i class="fa-solid fa-flask-vial"></i>
+            <span>Formulations Catalog</span>
+          </a>
+        </li>
+        <li>
+          <a href="/admin/orders" class="admin-nav-link {% if '/admin/orders' in request.path %}active{% endif %}">
+            <i class="fa-solid fa-dolly"></i>
+            <span>Orders & Dispatch</span>
+          </a>
+        </li>
+        <li>
+          <a href="/admin/coupons" class="admin-nav-link {% if '/admin/coupons' in request.path %}active{% endif %}">
+            <i class="fa-solid fa-tags"></i>
+            <span>Promos & Coupons</span>
+          </a>
+        </li>
+        <li>
+          <a href="/admin/settings" class="admin-nav-link {% if '/admin/settings' in request.path %}active{% endif %}">
+            <i class="fa-solid fa-sliders"></i>
+            <span>WhatsApp & Settings</span>
+          </a>
+        </li>
+      </ul>
+
+      <div style="padding-top: 1.5rem; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.5rem;">
+        <a href="/" class="admin-nav-link" target="_blank">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          <span>View Public Store</span>
+        </a>
+        <a href="/logout" class="admin-nav-link" style="color: var(--accent-rose);">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Sign Out</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Admin Workspace -->
+    <div class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <div style="font-weight: 700; font-size: 1.05rem; color: #fff;">
+          {% block page_title %}Clinic Operations{% endblock %}
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <a href="/admin/products/new" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #10b981, #059669);">
+            <i class="fa-solid fa-plus"></i> <span class="hide-mobile">New Formulation</span>
+          </a>
+          <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
+            <div style="width: 28px; height: 28px; border-radius: var(--radius-full); background: #10b981; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem;">A</div>
+            <span>{{ session.get('user_name', 'Admin').split(' ')[0] }}</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Admin Mobile Nav Bar -->
+      <nav class="admin-mobile-nav" aria-label="Admin Sections">
+        <a href="/admin" class="admin-mobile-nav-link {% if request.path == '/admin' %}active{% endif %}">
+          <i class="fa-solid fa-chart-pie"></i> Dashboard
+        </a>
+        <a href="/admin/products" class="admin-mobile-nav-link {% if '/admin/products' in request.path %}active{% endif %}">
+          <i class="fa-solid fa-flask-vial"></i> Catalog
+        </a>
+        <a href="/admin/orders" class="admin-mobile-nav-link {% if '/admin/orders' in request.path %}active{% endif %}">
+          <i class="fa-solid fa-dolly"></i> Orders
+        </a>
+        <a href="/admin/coupons" class="admin-mobile-nav-link {% if '/admin/coupons' in request.path %}active{% endif %}">
+          <i class="fa-solid fa-tags"></i> Promos
+        </a>
+        <a href="/admin/settings" class="admin-mobile-nav-link {% if '/admin/settings' in request.path %}active{% endif %}">
+          <i class="fa-solid fa-sliders"></i> Settings
+        </a>
+        <a href="/" class="admin-mobile-nav-link" target="_blank">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Store
+        </a>
+        <a href="/logout" class="admin-mobile-nav-link" style="color: var(--accent-rose);">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+        </a>
+      </nav>
+
+      <!-- Content Area -->
+      <div class="admin-content">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, msg in messages %}
+              <div style="background: {% if category == 'error' %}rgba(244, 63, 94, 0.15){% else %}rgba(16, 185, 129, 0.15){% endif %}; border: 1px solid {% if category == 'error' %}rgba(244, 63, 94, 0.3){% else %}rgba(16, 185, 129, 0.3){% endif %}; color: {% if category == 'error' %}#fca5a5{% else %}#a7f3d0{% endif %}; padding: 0.85rem 1.25rem; border-radius: var(--radius-md); font-size: 0.9rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.6rem;">
+                <i class="fa-solid {% if category == 'error' %}fa-circle-exclamation{% else %}fa-circle-check{% endif %}"></i>
+                <span>{{ msg }}</span>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        {% block admin_content %}{% endblock %}
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+  <script src="/static/js/main.js"></script>
+</body>
+</html>

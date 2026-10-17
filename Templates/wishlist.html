@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Saved Remedies & Wishlist | AURA Healthcare & Derma Labs{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2.5rem; padding-bottom: 4rem;">
+  <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+    <h1 style="font-size: 2.2rem; color: #fff;">Saved Clinical Remedies</h1>
+    <p style="color: var(--text-secondary); font-size: 0.95rem;">Curate your favorite dermatologist formulations and transfer them directly into your healthcare bag.</p>
+  </div>
+
+  {% if wishlist_products %}
+    <div class="products-grid">
+      {% for product in wishlist_products %}
+        <div class="product-card">
+          <button type="button" class="wishlist-toggle-btn active" data-product-id="{{ product.id }}" title="Remove from Remedies">
+            <i class="fa-solid fa-heart"></i>
+          </button>
+
+          <div class="product-thumbnail-box">
+            <a href="/product/{{ product.slug }}">
+              <img src="{{ product.image_url }}" alt="{{ product.name }}">
+            </a>
+          </div>
+
+          <div class="product-info">
+            <div class="product-category-tag" style="color: #6ee7b7;">{{ product.category_name }}</div>
+            <h3 class="product-title">
+              <a href="/product/{{ product.slug }}">{{ product.name }}</a>
+            </h3>
+
+            <div class="product-rating">
+              <i class="fa-solid fa-star"></i>
+              <strong style="color: #fff;">{{ "%.1f"|format(product.rating) }}</strong>
+              <span>({{ product.review_count }})</span>
+            </div>
+
+            <div class="product-price-row">
+              <span class="current-price">${{ "%.2f"|format(product.price) }}</span>
+            </div>
+
+            <div class="product-card-actions">
+              <form class="add-to-cart-form" style="flex: 1;">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="btn btn-primary btn-block btn-sm" style="background: linear-gradient(135deg, #10b981, #059669);">
+                  <i class="fa-solid fa-bag-shopping"></i> Move to Bag
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 5rem 2rem; text-align: center; max-width: 600px; margin: 0 auto;">
+      <div style="width: 80px; height: 80px; background: rgba(244, 63, 94, 0.1); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--accent-rose); font-size: 2rem;">
+        <i class="fa-solid fa-heart"></i>
+      </div>
+      <h2 style="font-size: 1.8rem; color: #fff; margin-bottom: 0.75rem;">Your Remedy Wishlist is Empty</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.95rem;">
+        Click the heart icon on any clinical serum, shampoo, or cream to save it here for quick access.
+      </p>
+      <a href="/shop" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #10b981, #059669);">
+        <i class="fa-solid fa-flask-vial"></i> Explore Clinical Formulations
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

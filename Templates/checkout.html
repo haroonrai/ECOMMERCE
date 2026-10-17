@@ -1,0 +1,417 @@
+{% extends "base.html" %}
+
+{% block title %}Secure Checkout & Payment | AURA Healthcare & Derma Labs{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2.5rem; padding-bottom: 5rem;">
+  <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+    <h1 style="font-size: 2.2rem; color: #fff;">Express Clinical Checkout & Payment</h1>
+    <p style="color: var(--text-secondary); font-size: 0.95rem;">Choose your preferred payment method: Cash on Delivery (COD) or Credit/Debit Card.</p>
+  </div>
+
+  <form method="POST" action="/checkout/process" id="checkout-form" enctype="multipart/form-data" data-base-total="{{ (cart.subtotal - cart.discount_amount + cart.tax_amount)|round(2) }}">
+    <div class="checkout-grid">
+      <!-- Checkout Form Left Column -->
+      <div>
+        <!-- 1. Customer & Shipping Info -->
+        <div class="checkout-card">
+          <h3 class="checkout-card-title">
+            <span style="width: 28px; height: 28px; background: #10b981; border-radius: var(--radius-full); display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; color: #fff;">1</span>
+            Recipient & Delivery Address
+          </h3>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">Patient / Recipient Full Name *</label>
+              <input type="text" name="customer_name" class="form-control" value="{{ user.full_name if user else '' }}" placeholder="e.g. Muhammad Ali" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address (For Order Invoicing) *</label>
+              <input type="email" name="customer_email" class="form-control" value="{{ user.email if user else '' }}" placeholder="ali@example.com" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mobile Contact Number (For Courier SMS & Delivery Updates) *</label>
+            <input type="tel" name="customer_phone" class="form-control" value="{{ user.phone if user else '' }}" placeholder="0300 1234567" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Complete Street / Clinic / House Address *</label>
+            <input type="text" name="shipping_address" class="form-control" value="{{ user.address if user else '' }}" placeholder="House # 12, Street 4, Sector F-7" required>
+          </div>
+
+          <div class="form-row-3">
+            <div class="form-group">
+              <label class="form-label">City *</label>
+              <input type="text" name="city" class="form-control" value="{{ user.city if user else '' }}" placeholder="Islamabad / Lahore / Karachi" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Postal / ZIP Code *</label>
+              <input type="text" name="postal_code" class="form-control" value="{{ user.postal_code if user else '' }}" placeholder="44000" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Country *</label>
+              <select name="country" class="form-control" style="cursor: pointer;">
+                <option value="Pakistan" selected>Pakistan</option>
+                <option value="United States">United States</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="United Arab Emirates">United Arab Emirates</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+            <label class="form-label" style="display: flex; align-items: center; justify-content: space-between;">
+              <span><i class="fa-solid fa-file-medical text-emerald-400"></i> Doctor's Prescription / Clinical Skin Notes (Optional)</span>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">PDF, JPG, PNG (Max 5MB)</span>
+            </label>
+            <input type="file" name="prescription_file" accept=".pdf,.png,.jpg,.jpeg" class="form-control" style="padding: 0.45rem 0.75rem; font-size: 0.85rem;">
+            <input type="text" name="notes" placeholder="Special delivery instructions or dermatologist notes..." class="form-control" style="margin-top: 0.5rem; font-size: 0.85rem;">
+          </div>
+        </div>
+
+        <!-- 2. Shipping Speed -->
+        <div class="checkout-card">
+          <h3 class="checkout-card-title">
+            <span style="width: 28px; height: 28px; background: #10b981; border-radius: var(--radius-full); display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; color: #fff;">2</span>
+            Courier & Shipping Method
+          </h3>
+
+          <label class="payment-method-card active" id="shipping-opt-standard" onclick="selectShippingMethod('Standard Shipping', 0.0)" style="display: flex; justify-content: space-between; align-items: center; border-color: #10b981; background: rgba(16, 185, 129, 0.1);">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <input type="radio" name="shipping_method" value="Standard Shipping" id="radio-ship-standard" checked style="accent-color: #10b981;">
+              <div>
+                <strong style="color: #fff; font-size: 0.95rem;">Complimentary Express Courier (TCS / Leopard / CallCourier)</strong>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">2-3 Business Days with live tracking SMS</div>
+              </div>
+            </div>
+            <span style="font-weight: 700; color: #6ee7b7;">$0.00</span>
+          </label>
+
+          <label class="payment-method-card" id="shipping-opt-vip" onclick="selectShippingMethod('Same Day VIP Delivery', 15.0)" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <input type="radio" name="shipping_method" value="Same Day VIP Delivery" id="radio-ship-vip" style="accent-color: #10b981;">
+              <div>
+                <strong style="color: #fff; font-size: 0.95rem;">VIP Same-Day Delivery (Major Cities)</strong>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Guaranteed evening doorstep hand-delivery</div>
+              </div>
+            </div>
+            <span style="font-weight: 700; color: #fff;">$15.00</span>
+          </label>
+        </div>
+
+        <!-- 3. Payment Method Selection -->
+        <div class="checkout-card">
+          <h3 class="checkout-card-title">
+            <span style="width: 28px; height: 28px; background: #10b981; border-radius: var(--radius-full); display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; color: #fff;">3</span>
+            Select Payment Method
+          </h3>
+
+          <!-- Payment Options Grid (Cash on Delivery & Card) -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 1.5rem;">
+            <!-- Cash on Delivery -->
+            <label class="payment-method-card active" id="btn-pay-cod" onclick="selectPaymentMethod('cod')" style="text-align: center; display: flex; flex-direction: column; gap: 0.35rem; border-color: #f59e0b; background: rgba(245, 158, 11, 0.1); cursor: pointer;">
+              <input type="radio" name="payment_method" value="Cash on Delivery (COD)" id="radio-pay-cod" checked style="display: none;">
+              <i class="fa-solid fa-hand-holding-dollar" style="font-size: 1.5rem; color: #f59e0b;"></i>
+              <span style="font-size: 0.92rem; font-weight: 700; color: #fff;">Cash On Delivery</span>
+              <span style="font-size: 0.72rem; color: #fbbf24;">Pay at Doorstep (Zero Advance)</span>
+            </label>
+
+            <!-- Debit/Credit Card -->
+            <label class="payment-method-card" id="btn-pay-card" onclick="selectPaymentMethod('card')" style="text-align: center; display: flex; flex-direction: column; gap: 0.35rem; cursor: pointer;">
+              <input type="radio" name="payment_method" value="Credit / Debit Card" id="radio-pay-card" style="display: none;">
+              <i class="fa-solid fa-credit-card" style="font-size: 1.5rem; color: var(--accent-primary);"></i>
+              <span style="font-size: 0.92rem; font-weight: 700; color: #fff;">Debit / Credit Card</span>
+              <span style="font-size: 0.72rem; color: #a5b4fc;">Visa &bull; Mastercard &bull; 3DS</span>
+            </label>
+          </div>
+
+          <!-- DYNAMIC PAYMENT DETAILS SECTIONS -->
+
+          <!-- 1. Cash on Delivery Section (Active by default) -->
+          <div id="section-cod" style="display: block; background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-md); padding: 1.5rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <div style="width: 32px; height: 32px; background: #f59e0b; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white;">
+                  <i class="fa-solid fa-truck-ramp-box"></i>
+                </div>
+                <strong style="color: #fff; font-size: 1.05rem;">Cash On Delivery (COD)</strong>
+              </div>
+              <span style="font-size: 0.75rem; background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 0.2rem 0.5rem; border-radius: var(--radius-full); font-weight: 700;">No Advance Required</span>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.3); border-radius: var(--radius-sm); padding: 1rem; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7;">
+              <p style="color: #fff; font-weight: 600; margin-bottom: 0.35rem;">Zero advance payment needed!</p>
+              Pay the exact order amount directly in cash to the express courier rider when your medical formulation parcel arrives at your doorstep.
+              <div style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.4rem;">
+                <i class="fa-solid fa-sms text-emerald-400"></i> Our clinic automated logistics system will send dispatch tracking SMS immediately upon order confirmation.
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Debit/Credit Card Section -->
+          <div id="section-card" style="display: none; background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: var(--radius-md); padding: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.25rem;">
+              <div style="width: 32px; height: 32px; background: var(--accent-primary); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: white;">
+                <i class="fa-solid fa-credit-card"></i>
+              </div>
+              <strong style="color: #fff; font-size: 1.05rem;">Credit or Debit Card (Visa, Mastercard, PayPak, UnionPay)</strong>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Cardholder Name</label>
+              <input type="text" name="card_name" class="form-control" placeholder="Name as on card" value="{{ user.full_name if user else 'Dr. Sarah Vance' }}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Card Number</label>
+              <input type="text" name="card_number" class="form-control" placeholder="•••• •••• •••• 4242" value="4242 4242 4242 4242">
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-label">Expiry Date</label>
+                <input type="text" name="card_expiry" class="form-control" placeholder="MM/YY" value="12/28">
+              </div>
+              <div class="form-group">
+                <label class="form-label">CVC / CVV</label>
+                <input type="text" name="card_cvc" class="form-control" placeholder="CVC" value="889">
+              </div>
+            </div>
+            <div style="font-size: 0.8rem; color: #a5b4fc; display: flex; align-items: center; gap: 0.4rem; margin-top: 0.5rem;">
+              <i class="fa-solid fa-shield-halved"></i> 256-Bit SSL Encrypted 3D-Secure Authorization
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Checkout Right Column: Order Summary -->
+      <div>
+        <div class="order-summary-box">
+          <h3 style="font-size: 1.3rem; color: #fff; margin-bottom: 1.25rem;">Healthcare Bag Breakdown ({{ cart['items']|length }})</h3>
+
+          <div style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; padding-right: 0.5rem;">
+            {% for item in cart['items'] %}
+              <div style="display: flex; gap: 0.85rem; align-items: center;">
+                <img src="{{ item.image_url }}" alt="{{ item.name }}" style="width: 52px; height: 52px; border-radius: var(--radius-md); object-fit: cover;">
+                <div style="flex: 1;">
+                  <div style="font-size: 0.88rem; font-weight: 600; color: #fff;">{{ item.name }}</div>
+                  <div style="font-size: 0.78rem; color: var(--text-muted);">Qty: {{ item.quantity }} &bull; ${{ "%.2f"|format(item.price) }}</div>
+                </div>
+                <div style="font-size: 0.95rem; font-weight: 700; color: #fff;">
+                  ${{ "%.2f"|format(item.price * item.quantity) }}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <div style="border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+            <div class="summary-line">
+              <span>Subtotal</span>
+              <span>${{ "%.2f"|format(cart.subtotal) }}</span>
+            </div>
+
+            {% if cart.discount_amount and cart.discount_amount > 0 %}
+              <div class="summary-line" style="color: var(--accent-secondary);">
+                <span>Coupon Discount ({{ cart.coupon_code }})</span>
+                <span>-${{ "%.2f"|format(cart.discount_amount) }}</span>
+              </div>
+            {% endif %}
+
+            <div class="summary-line">
+              <span>Courier Delivery</span>
+              <span id="summary-shipping-text" style="color: var(--accent-secondary);">Complimentary ($0.00)</span>
+            </div>
+
+            <div class="summary-line">
+              <span>Tax (8%)</span>
+              <span>${{ "%.2f"|format(cart.tax_amount) }}</span>
+            </div>
+
+            <div class="summary-line total">
+              <span>Total Due</span>
+              <span id="summary-total-amount" style="color: #10b981; font-size: 1.4rem;">${{ "%.2f"|format(cart.total) }}</span>
+            </div>
+          </div>
+
+          <div style="margin-top: 2rem;">
+            <button type="submit" id="place-order-btn" class="btn btn-primary btn-lg btn-block" style="background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);">
+              <i class="fa-solid fa-hand-holding-dollar"></i> Confirm Cash on Delivery Order (${{ "%.2f"|format(cart.total) }})
+            </button>
+          </div>
+
+          <div style="margin-top: 1.25rem; font-size: 0.78rem; text-align: center; color: var(--text-muted);">
+            <i class="fa-solid fa-shield-check" style="color: #10b981;"></i> Cash on Delivery & 256-Bit SSL Card Protected Guarantee.
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Automated Order Processing Modal Overlay -->
+<div id="order-processing-modal" style="display: none; position: fixed; inset: 0; background: rgba(5, 10, 20, 0.88); backdrop-filter: blur(10px); z-index: 9999; align-items: center; justify-content: center; padding: 1.5rem;">
+  <div style="background: var(--bg-card); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-xl); padding: 2.5rem 2rem; max-width: 480px; width: 100%; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6); position: relative; overflow: hidden;">
+    <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #10b981, #059669); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white; font-size: 1.8rem; box-shadow: 0 0 25px rgba(16, 185, 129, 0.4); animation: pulse 2s infinite;">
+      <i class="fa-solid fa-shield-halved"></i>
+    </div>
+    <h3 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;">Processing Clinical Order...</h3>
+    <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+      Please wait while we verify your selected payment method, allocate courier dispatch, and generate your prescription receipt.
+    </p>
+
+    <!-- Step Progression Tracker -->
+    <div style="display: flex; flex-direction: column; gap: 0.75rem; text-align: left; background: rgba(0,0,0,0.3); padding: 1rem 1.25rem; border-radius: var(--radius-md); font-size: 0.85rem;">
+      <div id="step-enc" style="display: flex; align-items: center; gap: 0.6rem; color: #10b981;">
+        <i class="fa-solid fa-check-circle"></i> <span>1. Securing Order Data & Prescription...</span>
+      </div>
+      <div id="step-pay" style="display: flex; align-items: center; gap: 0.6rem; color: #6ee7b7;">
+        <i class="fa-solid fa-spinner fa-spin"></i> <span>2. Authorizing Selected Payment Method...</span>
+      </div>
+      <div id="step-track" style="display: flex; align-items: center; gap: 0.6rem; color: var(--text-muted);">
+        <i class="fa-regular fa-circle"></i> <span>3. Generating Courier Tracking Number...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentShippingCost = 0.0;
+let currentPaymentMethod = 'cod';
+const checkoutFormEl = document.getElementById('checkout-form');
+const baseTaxableTotal = checkoutFormEl ? parseFloat(checkoutFormEl.getAttribute('data-base-total') || '0') : 0.0;
+
+function updateOrderTotalDisplay() {
+  const finalTotal = (baseTaxableTotal + currentShippingCost).toFixed(2);
+  const totalStr = "$" + finalTotal;
+  
+  const totalEl = document.getElementById('summary-total-amount');
+  if (totalEl) totalEl.textContent = totalStr;
+
+  const orderBtn = document.getElementById('place-order-btn');
+  if (!orderBtn) return;
+
+  if (currentPaymentMethod === 'cod') {
+    orderBtn.innerHTML = `<i class="fa-solid fa-hand-holding-dollar"></i> Confirm Cash on Delivery Order (${totalStr})`;
+    orderBtn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+    orderBtn.style.boxShadow = '0 4px 15px rgba(245, 158, 11, 0.4)';
+  } else if (currentPaymentMethod === 'card') {
+    orderBtn.innerHTML = `<i class="fa-solid fa-credit-card"></i> Pay via Credit/Debit Card (${totalStr})`;
+    orderBtn.style.background = 'linear-gradient(135deg, var(--accent-primary), #4f46e5)';
+    orderBtn.style.boxShadow = '0 4px 15px rgba(99, 102, 241, 0.4)';
+  }
+}
+
+function selectShippingMethod(methodName, cost) {
+  currentShippingCost = cost;
+  
+  const cardStandard = document.getElementById('shipping-opt-standard');
+  const cardVip = document.getElementById('shipping-opt-vip');
+  const radioStandard = document.getElementById('radio-ship-standard');
+  const radioVip = document.getElementById('radio-ship-vip');
+  const shippingSummaryText = document.getElementById('summary-shipping-text');
+
+  if (cost > 0) {
+    if (cardStandard) {
+      cardStandard.classList.remove('active');
+      cardStandard.style.borderColor = 'var(--border-color)';
+      cardStandard.style.background = 'rgba(255, 255, 255, 0.03)';
+    }
+    if (cardVip) {
+      cardVip.classList.add('active');
+      cardVip.style.borderColor = '#10b981';
+      cardVip.style.background = 'rgba(16, 185, 129, 0.1)';
+    }
+    if (radioVip) radioVip.checked = true;
+    if (shippingSummaryText) {
+      shippingSummaryText.textContent = '$' + cost.toFixed(2) + ' (Same-Day VIP)';
+      shippingSummaryText.style.color = '#fff';
+    }
+  } else {
+    if (cardVip) {
+      cardVip.classList.remove('active');
+      cardVip.style.borderColor = 'var(--border-color)';
+      cardVip.style.background = 'rgba(255, 255, 255, 0.03)';
+    }
+    if (cardStandard) {
+      cardStandard.classList.add('active');
+      cardStandard.style.borderColor = '#10b981';
+      cardStandard.style.background = 'rgba(16, 185, 129, 0.1)';
+    }
+    if (radioStandard) radioStandard.checked = true;
+    if (shippingSummaryText) {
+      shippingSummaryText.textContent = 'Complimentary ($0.00)';
+      shippingSummaryText.style.color = 'var(--accent-secondary)';
+    }
+  }
+
+  updateOrderTotalDisplay();
+}
+
+function selectPaymentMethod(method) {
+  currentPaymentMethod = method;
+  // Reset buttons
+  document.querySelectorAll('.payment-method-card').forEach(b => {
+    if (!b.id.startsWith('shipping-opt')) {
+      b.classList.remove('active');
+      b.style.borderColor = 'var(--border-color)';
+      b.style.background = 'rgba(255, 255, 255, 0.03)';
+    }
+  });
+
+  const sectionCod = document.getElementById('section-cod');
+  const sectionCard = document.getElementById('section-card');
+  if (sectionCod) sectionCod.style.display = 'none';
+  if (sectionCard) sectionCard.style.display = 'none';
+
+  if (method === 'cod') {
+    const btn = document.getElementById('btn-pay-cod');
+    if (btn) {
+      btn.classList.add('active');
+      btn.style.borderColor = '#f59e0b';
+      btn.style.background = 'rgba(245, 158, 11, 0.1)';
+    }
+    const radio = document.getElementById('radio-pay-cod');
+    if (radio) radio.checked = true;
+    if (sectionCod) sectionCod.style.display = 'block';
+  } else if (method === 'card') {
+    const btn = document.getElementById('btn-pay-card');
+    if (btn) {
+      btn.classList.add('active');
+      btn.style.borderColor = 'var(--accent-primary)';
+      btn.style.background = 'rgba(99, 102, 241, 0.1)';
+    }
+    const radio = document.getElementById('radio-pay-card');
+    if (radio) radio.checked = true;
+    if (sectionCard) sectionCard.style.display = 'block';
+  }
+
+  updateOrderTotalDisplay();
+}
+
+// Intercept checkout form submission to show processing overlay
+if (checkoutFormEl) {
+  checkoutFormEl.addEventListener('submit', function() {
+    const modal = document.getElementById('order-processing-modal');
+    if (modal) {
+      modal.style.display = 'flex';
+      
+      // Simulate step visual progress before redirect
+      setTimeout(() => {
+        const stepPay = document.getElementById('step-pay');
+        if (stepPay) {
+          stepPay.innerHTML = '<i class="fa-solid fa-check-circle"></i> <span>2. Payment Method Authorized</span>';
+          stepPay.style.color = '#10b981';
+        }
+        const stepTrack = document.getElementById('step-track');
+        if (stepTrack) {
+          stepTrack.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>3. Generating Courier Tracking Number...</span>';
+          stepTrack.style.color = '#6ee7b7';
+        }
+      }, 500);
+    }
+  });
+}
+</script>
+{% endblock %}
+

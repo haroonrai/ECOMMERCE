@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} | AURA Healthcare & Derma Labs{% endblock %}
+{% block og_title %}{{ product.name }} - ${{ "%.2f"|format(product.price) }} | AURA Labs{% endblock %}
+{% block og_description %}{{ product.short_description if product.short_description else product.description[:140] }}{% endblock %}
+{% block og_image %}{{ product.image_url }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 1.5rem; padding-bottom: 7.5rem;">
+  <!-- Breadcrumbs -->
+  <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+    <a href="/">Home</a> / <a href="/shop">Formulations</a> / <a href="/shop?category={{ product.category_slug }}">{{ product.category_name }}</a> / <span style="color: #fff;">{{ product.name }}</span>
+  </div>
+
+  <div class="product-detail-grid">
+    <!-- Gallery -->
+    <div class="product-gallery">
+      <div class="main-image-frame">
+        <img id="main-product-image" src="{{ product.image_url }}" alt="{{ product.name }}">
+      </div>
+      <div class="thumbnail-strip">
+        <div class="thumb-item active" data-full-src="{{ product.image_url }}">
+          <img src="{{ product.image_url }}" alt="{{ product.name }}">
+        </div>
+        {% for img in gallery_images %}
+          <div class="thumb-item" data-full-src="{{ img.image_url }}">
+            <img src="{{ img.image_url }}" alt="{{ product.name }}">
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Product Details Info -->
+    <div class="product-detail-info">
+      {% if product.badge %}
+        <span class="product-detail-badge" style="background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3);">{{ product.badge }}</span>
+      {% endif %}
+
+      <h1 class="product-detail-title">{{ product.name }}</h1>
+
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;">
+        <div class="product-rating" style="margin-bottom: 0;">
+          <i class="fa-solid fa-star"></i>
+          <strong style="color: #fff; font-size: 1rem;">{{ "%.1f"|format(product.rating) }}</strong>
+          <span>({{ product.review_count }} verified clinic reviews)</span>
+        </div>
+        <span style="color: var(--border-color);">&bull;</span>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">SKU: AURA-{{ product.id }}092</span>
+      </div>
+
+      <div class="product-detail-price">
+        <span class="current-price" style="font-size: 2.2rem; color: #fff;">${{ "%.2f"|format(product.price) }}</span>
+        {% if product.original_price and product.original_price > product.price %}
+          <span class="original-price" style="font-size: 1.3rem;">${{ "%.2f"|format(product.original_price) }}</span>
+          <span class="discount-tag" style="font-size: 0.85rem;">Save ${{ "%.2f"|format(product.original_price - product.price) }} ({{ ((product.original_price - product.price) / product.original_price * 100)|int }}% OFF)</span>
+        {% endif %}
+      </div>
+
+      {% if product.stock > 5 %}
+        <div class="stock-status-pill" style="color: #6ee7b7; background: rgba(16, 185, 129, 0.15);">
+          <i class="fa-solid fa-circle-check"></i> In Stock & Freshly Formulated ({{ product.stock }} units available)
+        </div>
+      {% elif product.stock > 0 %}
+        <div class="stock-status-pill low">
+          <i class="fa-solid fa-triangle-exclamation"></i> Low Batch: Only {{ product.stock }} remaining
+        </div>
+      {% else %}
+        <div class="stock-status-pill" style="color: var(--accent-rose); background: rgba(244, 63, 94, 0.1);">
+          <i class="fa-solid fa-circle-xmark"></i> Currently Out of Stock
+        </div>
+      {% endif %}
+
+      <p class="product-description-text">
+        {{ product.description }}
+      </p>
+
+      <!-- Purchase Form -->
+      <form class="add-to-cart-form" style="margin-bottom: 2rem;">
+        <input type="hidden" name="product_id" value="{{ product.id }}">
+        
+        <div class="quantity-picker-wrapper">
+          <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-secondary);">Prescription Quantity</span>
+          <div class="qty-control">
+            <button type="button" class="qty-btn" id="qty-decrease">-</button>
+            <input type="number" id="product-quantity-input" name="quantity" value="1" min="1" max="{{ product.stock }}" class="qty-input">
+            <button type="button" class="qty-btn" id="qty-increase">+</button>
+          </div>
+        </div>
+
+        <div class="product-actions-bar">
+          <button type="submit" class="btn btn-primary btn-lg" style="flex: 1.5; background: linear-gradient(135deg, #10b981, #059669);" {% if product.stock == 0 %}disabled{% endif %}>
+            <i class="fa-solid fa-bag-shopping"></i> Add to Healthcare Bag
+          </button>
+          <a href="/checkout?buy_now={{ product.id }}" class="btn btn-secondary btn-lg" style="flex: 1;">
+            <i class="fa-solid fa-bolt text-amber-400"></i> Instant Buy
+          </a>
+          <button type="button" class="wishlist-toggle-btn {% if product.id in user_wishlist_ids %}active{% endif %}" data-product-id="{{ product.id }}" style="position: static; width: 50px; height: 50px; border-radius: var(--radius-md);" title="Save to Remedies">
+            <i class="{% if product.id in user_wishlist_ids %}fa-solid{% else %}fa-regular{% endif %} fa-heart" style="font-size: 1.2rem;"></i>
+          </button>
+        </div>
+      </form>
+
+      <!-- Assurance Points -->
+      <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.88rem; color: var(--text-secondary);">
+          <i class="fa-solid fa-flask-vial text-emerald-400"></i>
+          <span>Dermatologist Formulated & 100% Paraben/Sulfate Free</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.88rem; color: var(--text-secondary);">
+          <i class="fa-solid fa-truck-fast text-emerald-400"></i>
+          <span>Express Courier with Live SMS Tracking (TCS / Leopard / CallCourier)</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.88rem; color: var(--text-secondary);">
+          <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+          <span>Cash on Delivery (Zero Advance) &amp; Direct 3DS Card Accepted</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Reviews Section -->
+  <section class="reviews-container">
+    <div class="reviews-grid">
+      <!-- Leave a Review Box -->
+      <div>
+        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem;">
+          <h3 style="font-size: 1.3rem; color: #fff; margin-bottom: 0.5rem;">Write a Verified Review</h3>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Share your clinical experience with this formulation.</p>
+
+          <form method="POST" action="/product/{{ product.slug }}/review">
+            <div class="form-group">
+              <label class="form-label">Your Rating</label>
+              <select name="rating" class="form-control" required style="cursor: pointer;">
+                <option value="5">★★★★★ (5/5) Exceptional Results</option>
+                <option value="4">★★★★☆ (4/5) Very Good</option>
+                <option value="3">★★★☆☆ (3/5) Average</option>
+                <option value="2">★★☆☆☆ (2/5) Below Expectations</option>
+                <option value="1">★☆☆☆☆ (1/5) Poor</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Your Name / Title</label>
+              <input type="text" name="user_name" class="form-control" value="{{ session.get('user_name', '') }}" placeholder="e.g. Dr. Sarah Vance / Verified Patient" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Review Headline</label>
+              <input type="text" name="title" class="form-control" placeholder="e.g. Visible results within 10 days!" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Detailed Clinical Feedback</label>
+              <textarea name="comment" rows="4" class="form-control" placeholder="Describe skin texture, absorption, hair density changes..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" style="background: linear-gradient(135deg, #10b981, #059669);">Submit Review</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Reviews Feed -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <h3 style="font-size: 1.3rem; color: #fff;">Patient & Customer Reviews ({{ reviews|length }})</h3>
+          <div style="color: var(--accent-gold); font-size: 0.95rem;">
+            <i class="fa-solid fa-star"></i> {{ "%.1f"|format(product.rating) }} Rating Average
+          </div>
+        </div>
+
+        {% if reviews %}
+          {% for r in reviews %}
+            <div class="review-card">
+              <div class="review-header">
+                <div>
+                  <div class="reviewer-name">{{ r.user_name }} <span style="font-size: 0.75rem; color: var(--accent-secondary); background: rgba(16, 185, 129, 0.1); padding: 0.15rem 0.4rem; border-radius: var(--radius-sm); margin-left: 0.35rem;"><i class="fa-solid fa-check"></i> Verified Patient</span></div>
+                  <div class="product-rating" style="margin: 0.25rem 0 0;">
+                    {% for i in range(r.rating) %}
+                      <i class="fa-solid fa-star" style="font-size: 0.75rem;"></i>
+                    {% endfor %}
+                  </div>
+                </div>
+                <div class="review-date">{{ r.created_at[:10] if r.created_at else 'Recent' }}</div>
+              </div>
+              <h4 style="font-size: 1rem; color: #fff; margin-bottom: 0.4rem;">{{ r.title }}</h4>
+              <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.6;">{{ r.comment }}</p>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 3rem; text-align: center; color: var(--text-muted);">
+            <i class="fa-regular fa-comment-dots" style="font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.6; color: #10b981;"></i>
+            <p style="color: #fff; font-size: 1.05rem;">No reviews submitted yet.</p>
+            <p style="font-size: 0.85rem;">Be the first to review this formulation!</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Products -->
+  {% if related_products %}
+    <section class="section" style="padding-top: 5rem;">
+      <div class="section-header">
+        <div>
+          <div style="font-size: 0.8rem; font-weight: 700; color: #10b981; text-transform: uppercase; margin-bottom: 0.25rem;">Synergistic Regimen</div>
+          <h2 class="section-title">Complementary Formulations</h2>
+        </div>
+      </div>
+      <div class="products-grid">
+        {% for rel in related_products %}
+          <div class="product-card">
+            <div class="product-thumbnail-box">
+              <a href="/product/{{ rel.slug }}">
+                <img src="{{ rel.image_url }}" alt="{{ rel.name }}">
+              </a>
+            </div>
+            <div class="product-info">
+              <div class="product-category-tag" style="color: #6ee7b7;">{{ rel.category_name }}</div>
+              <h3 class="product-title"><a href="/product/{{ rel.slug }}">{{ rel.name }}</a></h3>
+              <div class="product-price-row">
+                <span class="current-price">${{ "%.2f"|format(rel.price) }}</span>
+              </div>
+              <div class="product-card-actions">
+                <form class="add-to-cart-form" style="flex: 1;">
+                  <input type="hidden" name="product_id" value="{{ rel.id }}">
+                  <input type="hidden" name="quantity" value="1">
+                  <button type="submit" class="btn btn-primary btn-block btn-sm" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    <i class="fa-solid fa-bag-shopping"></i> Add to Bag
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  <!-- Sticky Mobile Action Bar -->
+  <div class="sticky-mobile-buy-bar">
+    <div class="sticky-buy-info">
+      <div class="sticky-buy-price">${{ "%.2f"|format(product.price) }}</div>
+      <div class="sticky-buy-stock" style="color: {% if product.stock > 0 %}#10b981{% else %}#f43f5e{% endif %};">
+        {% if product.stock > 0 %}In Stock ({{ product.stock }}){% else %}Out of Stock{% endif %}
+      </div>
+    </div>
+    <div class="sticky-buy-actions">
+      <button type="button" class="btn btn-secondary btn-sm sticky-wishlist-btn wishlist-toggle-btn {% if product.id in user_wishlist_ids %}active{% endif %}" data-product-id="{{ product.id }}" aria-label="Save">
+        <i class="{% if product.id in user_wishlist_ids %}fa-solid{% else %}fa-regular{% endif %} fa-heart"></i>
+      </button>
+      <form class="add-to-cart-form" style="flex: 1; display: flex;">
+        <input type="hidden" name="product_id" value="{{ product.id }}">
+        <input type="hidden" name="quantity" value="1" id="sticky-qty-input">
+        <button type="submit" class="btn btn-primary btn-sm btn-block" style="background: linear-gradient(135deg, #10b981, #059669);" {% if product.stock == 0 %}disabled{% endif %}>
+          <i class="fa-solid fa-bag-shopping"></i> Add to Bag
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

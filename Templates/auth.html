@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Login & Registration | AURA Healthcare & Derma Labs{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3.5rem; padding-bottom: 5rem; max-width: 520px;">
+  <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 2.5rem; box-shadow: var(--shadow-lg);">
+    
+    <!-- Tab Switcher -->
+    <div style="display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 2rem;">
+      <button type="button" id="tab-login-btn" onclick="switchAuthTab('login')" style="flex: 1; padding: 0.75rem; font-weight: 700; font-size: 1rem; color: #fff; border-bottom: 2px solid #10b981; cursor: pointer;">
+        Patient Sign In
+      </button>
+      <button type="button" id="tab-register-btn" onclick="switchAuthTab('register')" style="flex: 1; padding: 0.75rem; font-weight: 600; font-size: 1rem; color: var(--text-muted); cursor: pointer;">
+        Create Account
+      </button>
+    </div>
+
+    <!-- Sign In Form -->
+    <form method="POST" action="/login" id="login-form">
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" name="email" id="login-email-input" class="form-control" placeholder="user@store.com" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" id="login-pass-input" class="form-control" placeholder="••••••••" required>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);">
+          Sign In to Account
+        </button>
+      </div>
+
+      <!-- Quick Demo Login Buttons -->
+      <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); text-align: center;">
+        <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">1-Click Demo Accounts</span>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem;">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="fillCredentials('admin@store.com', 'admin123')">
+            <i class="fa-solid fa-shield-halved text-accent-primary"></i> Clinic Admin
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="fillCredentials('user@store.com', 'user123')">
+            <i class="fa-solid fa-user text-emerald-400"></i> Patient Demo
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Register Form -->
+    <form method="POST" action="/register" id="register-form" style="display: none;">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" name="full_name" class="form-control" placeholder="Muhammad Ali" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" name="email" class="form-control" placeholder="ali@example.com" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" placeholder="At least 6 characters" minlength="6" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Phone Number (For Courier SMS Tracking)</label>
+        <input type="tel" name="phone" class="form-control" placeholder="0300 1234567">
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);">
+          Create Patient Account
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<script>
+function switchAuthTab(tab) {
+  const loginForm = document.getElementById('login-form');
+  const registerForm = document.getElementById('register-form');
+  const loginBtn = document.getElementById('tab-login-btn');
+  const registerBtn = document.getElementById('tab-register-btn');
+
+  if (tab === 'login') {
+    loginForm.style.display = 'block';
+    registerForm.style.display = 'none';
+    loginBtn.style.color = '#fff';
+    loginBtn.style.borderBottom = '2px solid #10b981';
+    registerBtn.style.color = 'var(--text-muted)';
+    registerBtn.style.borderBottom = 'none';
+  } else {
+    loginForm.style.display = 'none';
+    registerForm.style.display = 'block';
+    registerBtn.style.color = '#fff';
+    registerBtn.style.borderBottom = '2px solid #10b981';
+    loginBtn.style.color = 'var(--text-muted)';
+    loginBtn.style.borderBottom = 'none';
+  }
+}
+
+function fillCredentials(email, pass) {
+  document.getElementById('login-email-input').value = email;
+  document.getElementById('login-pass-input').value = pass;
+}
+</script>
+{% endblock %}

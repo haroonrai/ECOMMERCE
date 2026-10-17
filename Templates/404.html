@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found (404) | AURA Healthcare & Derma Labs{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 5rem 1rem; text-align: center; max-width: 640px; margin: 0 auto;">
+  <div style="width: 90px; height: 90px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #10b981; font-size: 2.4rem; box-shadow: 0 0 25px rgba(16, 185, 129, 0.2);">
+    <i class="fa-solid fa-flask-vial"></i>
+  </div>
+  
+  <span style="font-size: 0.9rem; font-weight: 700; color: #6ee7b7; text-transform: uppercase; letter-spacing: 0.08em;">Error 404 &bull; Formulation Unknown</span>
+  <h1 style="font-size: 2.5rem; color: #fff; margin: 0.5rem 0 1rem; font-family: 'Space Grotesk', sans-serif;">Treatment Not Found</h1>
+  
+  <p style="color: var(--text-secondary); font-size: 1rem; line-height: 1.6; margin-bottom: 2rem;">
+    The clinical formulation or page you are searching for might have been updated, relocated, or expired. Explore our verified treatments below.
+  </p>
+
+  <!-- Search Recovery Box -->
+  <form action="/shop" method="GET" style="display: flex; gap: 0.5rem; max-width: 440px; margin: 0 auto 2.5rem;">
+    <input type="text" name="q" placeholder="Search Vitamin C, Retinol, Shampoos..." class="form-control" style="padding: 0.75rem 1rem;">
+    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981, #059669);">
+      <i class="fa-solid fa-magnifying-glass"></i>
+    </button>
+  </form>
+
+  <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+    <a href="/shop" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #10b981, #059669);">
+      <i class="fa-solid fa-sparkles"></i> Browse All 20 Formulations
+    </a>
+    <a href="/" class="btn btn-secondary btn-lg">
+      <i class="fa-solid fa-house"></i> Return Home
+    </a>
+  </div>
+</div>
+{% endblock %}

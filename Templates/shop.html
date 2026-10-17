@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}Clinical Formulations & Skincare | AURA Healthcare & Derma Labs{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
+  <!-- Breadcrumbs & Header -->
+  <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;">
+        <a href="/">Home</a> / <span style="color: #fff;">Clinical Formulations</span>
+        {% if current_category %}
+          / <span style="color: #10b981;">{{ current_category.name }}</span>
+        {% endif %}
+      </div>
+      <h1 style="font-size: 2.2rem; color: #fff;">
+        {% if current_category %}{{ current_category.name }}{% elif search_query %}Search: "{{ search_query }}"{% else %}All 20 Clinical Formulations{% endif %}
+      </h1>
+    </div>
+
+    <!-- Active Count & Sort -->
+    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+      <span style="font-size: 0.9rem; color: var(--text-secondary);">Showing <strong>{{ products|length }}</strong> treatments</span>
+      <form method="GET" action="/shop" id="sort-form" style="display: flex; align-items: center; gap: 0.5rem;">
+        {% if current_category %}<input type="hidden" name="category" value="{{ current_category.slug }}">{% endif %}
+        {% if search_query %}<input type="hidden" name="q" value="{{ search_query }}">{% endif %}
+        {% if min_price %}<input type="hidden" name="min_price" value="{{ min_price }}">{% endif %}
+        {% if max_price %}<input type="hidden" name="max_price" value="{{ max_price }}">{% endif %}
+        
+        <select name="sort" class="form-control" style="padding: 0.5rem 1rem; width: auto; cursor: pointer;" onchange="document.getElementById('sort-form').submit()">
+          <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Sort: Doctor Recommended</option>
+          <option value="price_asc" {% if current_sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+          <option value="price_desc" {% if current_sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+          <option value="rating" {% if current_sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <!-- Mobile Filter & Sort Bar -->
+  <div class="mobile-filter-bar">
+    <div style="display: flex; gap: 0.5rem;">
+      <button type="button" class="mobile-filter-btn" onclick="openMobileFilterSheet()">
+        <i class="fa-solid fa-sliders"></i>
+        <span>Filters & Sort</span>
+        {% if current_category or min_price or max_price or (current_sort and current_sort != 'newest') %}
+          <span style="background: #10b981; color: white; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800;">!</span>
+        {% endif %}
+      </button>
+      <button type="button" class="mobile-filter-btn" onclick="openRoutineAnalyzer()" style="background: rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.3); color: #a5b4fc;">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span>Routine Finder</span>
+      </button>
+    </div>
+    <div style="font-size: 0.82rem; color: var(--text-secondary);">
+      <strong>{{ products|length }}</strong> Items
+    </div>
+  </div>
+
+  <!-- Mobile Slide-Up Filter & Sort Bottom Sheet -->
+  <div id="mobile-filter-sheet-overlay" class="mobile-filter-sheet-overlay" onclick="closeMobileFilterSheet()"></div>
+  <div id="mobile-filter-sheet" class="mobile-filter-sheet">
+    <div class="mobile-filter-sheet-header">
+      <h3 style="font-size: 1.15rem; color: #fff; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-sliders text-emerald-400"></i> Filter & Sort Catalog
+      </h3>
+      <button type="button" onclick="closeMobileFilterSheet()" style="color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 4px;">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    
+    <form method="GET" action="/shop" class="mobile-filter-sheet-body">
+      {% if search_query %}<input type="hidden" name="q" value="{{ search_query }}">{% endif %}
+
+      <!-- Sort Selection -->
+      <div style="margin-bottom: 1.5rem;">
+        <label class="form-label" style="font-size: 0.9rem; font-weight: 700; color: #fff;">Sort Formulations</label>
+        <select name="sort" class="form-control" style="cursor: pointer; padding: 0.65rem 1rem;">
+          <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Doctor Recommended</option>
+          <option value="price_asc" {% if current_sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+          <option value="price_desc" {% if current_sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+          <option value="rating" {% if current_sort == 'rating' %}selected{% endif %}>Highest Clinical Rating</option>
+        </select>
+      </div>
+
+      <!-- Category Filter -->
+      <div style="margin-bottom: 1.5rem;">
+        <label class="form-label" style="font-size: 0.9rem; font-weight: 700; color: #fff;">Healthcare Category</label>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <label style="display: flex; align-items: center; gap: 0.6rem; color: #fff; font-size: 0.9rem; cursor: pointer; padding: 0.4rem 0;">
+            <input type="radio" name="category" value="" {% if not current_category %}checked{% endif %} style="accent-color: #10b981;">
+            <span>All Formulations (20 Items)</span>
+          </label>
+          {% for cat in categories %}
+            <label style="display: flex; align-items: center; gap: 0.6rem; color: #fff; font-size: 0.9rem; cursor: pointer; padding: 0.4rem 0;">
+              <input type="radio" name="category" value="{{ cat.slug }}" {% if current_category and current_category.id == cat.id %}checked{% endif %} style="accent-color: #10b981;">
+              <span>{{ cat.name }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Price Range Filter -->
+      <div style="margin-bottom: 1.5rem;">
+        <label class="form-label" style="font-size: 0.9rem; font-weight: 700; color: #fff;">Price Range ($ USD)</label>
+        <div style="display: flex; gap: 0.75rem;">
+          <input type="number" name="min_price" placeholder="Min $" value="{{ min_price if min_price else '' }}" class="form-control" style="padding: 0.6rem 0.85rem;">
+          <input type="number" name="max_price" placeholder="Max $" value="{{ max_price if max_price else '' }}" class="form-control" style="padding: 0.6rem 0.85rem;">
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+        <button type="submit" class="btn btn-primary btn-block" style="background: linear-gradient(135deg, #10b981, #059669); flex: 2;">
+          Apply Filters
+        </button>
+        <a href="/shop" class="btn btn-secondary" style="flex: 1; text-align: center;">Reset</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Mobile Horizontal Scrollable Category Pills -->
+  <div class="mobile-category-pills-wrapper">
+    <div class="mobile-category-pills">
+      <a href="/shop{% if current_sort %}?sort={{ current_sort }}{% endif %}" class="category-pill {% if not current_category %}active{% endif %}">
+        <i class="fa-solid fa-sparkles"></i> All Formulations
+      </a>
+      {% for cat in categories %}
+        <a href="/shop?category={{ cat.slug }}{% if current_sort %}&sort={{ current_sort }}{% endif %}" class="category-pill {% if current_category and current_category.id == cat.id %}active{% endif %}">
+          {% if cat.slug == 'serums' %}
+            <i class="fa-solid fa-droplet text-emerald-400"></i>
+          {% elif cat.slug == 'haircare' %}
+            <i class="fa-solid fa-pump-soap text-emerald-400"></i>
+          {% elif cat.slug == 'creams' %}
+            <i class="fa-solid fa-jar text-emerald-400"></i>
+          {% elif cat.slug == 'cleansers' %}
+            <i class="fa-solid fa-hand-holding-droplet text-emerald-400"></i>
+          {% elif cat.slug == 'supplements' %}
+            <i class="fa-solid fa-capsules text-emerald-400"></i>
+          {% else %}
+            <i class="fa-solid fa-flask text-emerald-400"></i>
+          {% endif %}
+          {{ cat.name }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="shop-layout">
+    <!-- Filters Sidebar -->
+    <aside class="shop-sidebar">
+      <div class="filter-group">
+        <h4 class="filter-title">Healthcare Categories</h4>
+        <ul class="filter-list">
+          <li class="filter-item {% if not current_category %}active{% endif %}">
+            <a href="/shop{% if current_sort %}?sort={{ current_sort }}{% endif %}">
+              <span>All Formulations</span>
+              <span>&rarr;</span>
+            </a>
+          </li>
+          {% for cat in categories %}
+            <li class="filter-item {% if current_category and current_category.id == cat.id %}active{% endif %}">
+              <a href="/shop?category={{ cat.slug }}{% if current_sort %}&sort={{ current_sort }}{% endif %}">
+                <span>{{ cat.name }}</span>
+                <i class="fa-solid fa-chevron-right" style="font-size: 0.75rem;"></i>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- Price Range Filter -->
+      <div class="filter-group">
+        <h4 class="filter-title">Price Range</h4>
+        <form method="GET" action="/shop">
+          {% if current_category %}<input type="hidden" name="category" value="{{ current_category.slug }}">{% endif %}
+          {% if search_query %}<input type="hidden" name="q" value="{{ search_query }}">{% endif %}
+          {% if current_sort %}<input type="hidden" name="sort" value="{{ current_sort }}">{% endif %}
+
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+            <input type="number" name="min_price" placeholder="Min $" value="{{ min_price if min_price else '' }}" class="form-control" style="padding: 0.45rem 0.65rem; font-size: 0.85rem;">
+            <input type="number" name="max_price" placeholder="Max $" value="{{ max_price if max_price else '' }}" class="form-control" style="padding: 0.45rem 0.65rem; font-size: 0.85rem;">
+          </div>
+          <button type="submit" class="btn btn-secondary btn-sm btn-block" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); color: #6ee7b7;">Filter Price</button>
+        </form>
+      </div>
+
+      {% if current_category or search_query or min_price or max_price %}
+        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+          <a href="/shop" class="btn btn-outline btn-sm btn-block" style="color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.3);">
+            <i class="fa-solid fa-xmark"></i> Clear All Filters
+          </a>
+        </div>
+      {% endif %}
+    </aside>
+
+    <!-- Products Grid -->
+    <div>
+      {% if products %}
+        <div class="products-grid">
+          {% for product in products %}
+            <div class="product-card">
+              {% if product.badge %}
+                <div class="product-badge" style="color: #6ee7b7; border-color: rgba(16, 185, 129, 0.3);">{{ product.badge }}</div>
+              {% endif %}
+              
+              <button type="button" class="wishlist-toggle-btn {% if product.id in user_wishlist_ids %}active{% endif %}" data-product-id="{{ product.id }}" title="Save to Remedies">
+                <i class="{% if product.id in user_wishlist_ids %}fa-solid{% else %}fa-regular{% endif %} fa-heart"></i>
+              </button>
+
+              <div class="product-thumbnail-box">
+                <a href="/product/{{ product.slug }}">
+                  <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                </a>
+              </div>
+
+              <div class="product-info">
+                <div class="product-category-tag" style="color: #6ee7b7;">{{ product.category_name }}</div>
+                <h3 class="product-title">
+                  <a href="/product/{{ product.slug }}">{{ product.name }}</a>
+                </h3>
+
+                <div class="product-rating">
+                  <i class="fa-solid fa-star"></i>
+                  <strong style="color: #fff;">{{ "%.1f"|format(product.rating) }}</strong>
+                  <span>({{ product.review_count }})</span>
+                </div>
+
+                <div class="product-price-row">
+                  <span class="current-price">${{ "%.2f"|format(product.price) }}</span>
+                  {% if product.original_price and product.original_price > product.price %}
+                    <span class="original-price">${{ "%.2f"|format(product.original_price) }}</span>
+                    <span class="discount-tag">Save {{ ((product.original_price - product.price) / product.original_price * 100)|int }}%</span>
+                  {% endif %}
+                </div>
+
+                <div class="product-card-actions">
+                  <form class="add-to-cart-form" style="flex: 1;">
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="btn btn-primary btn-block btn-sm" style="background: linear-gradient(135deg, #10b981, #059669);">
+                      <i class="fa-solid fa-bag-shopping"></i> Add to Bag
+                    </button>
+                  </form>
+                  <a href="/product/{{ product.slug }}" class="btn btn-secondary btn-sm" title="Inspect Formulation">
+                    <i class="fa-solid fa-flask"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 4rem 2rem; text-align: center;">
+          <i class="fa-solid fa-flask-vial" style="font-size: 3rem; color: #10b981; margin-bottom: 1.25rem;"></i>
+          <h3 style="font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem;">No formulations match your search criteria</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Try searching for Vitamin C, Retinol, Shampoos, or Collagen.</p>
+          <a href="/shop" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981, #059669);">Browse All 20 Formulations</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

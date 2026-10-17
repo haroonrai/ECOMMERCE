@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}My Patient Profile | AURA Healthcare & Derma Labs{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2.5rem; padding-bottom: 5rem; max-width: 800px;">
+  <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="font-size: 2.2rem; color: #fff;">Patient Profile</h1>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">Manage your delivery addresses and personal preferences.</p>
+    </div>
+    {% if user.is_admin %}
+      <a href="/admin" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #10b981, #059669);">
+        <i class="fa-solid fa-shield-halved"></i> Clinic Admin Portal
+      </a>
+    {% endif %}
+  </div>
+
+  <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 2.5rem;">
+    <form method="POST" action="/profile/update">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="full_name" class="form-control" value="{{ user.full_name }}" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" value="{{ user.email }}" disabled style="opacity: 0.6; cursor: not-allowed;">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Contact Phone Number</label>
+        <input type="tel" name="phone" class="form-control" value="{{ user.phone if user.phone else '' }}" placeholder="0300 1234567">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Default Delivery Street Address</label>
+        <input type="text" name="address" class="form-control" value="{{ user.address if user.address else '' }}" placeholder="House # 12, Street 4, Sector F-7">
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <input type="text" name="city" class="form-control" value="{{ user.city if user.city else '' }}" placeholder="Islamabad">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Postal / ZIP Code</label>
+          <input type="text" name="postal_code" class="form-control" value="{{ user.postal_code if user.postal_code else '' }}" placeholder="44000">
+        </div>
+      </div>
+
+      <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981, #059669);">
+          <i class="fa-solid fa-floppy-disk"></i> Save Profile Details
+        </button>
+        <a href="/orders" class="btn btn-secondary">
+          <i class="fa-solid fa-box-open"></i> View My Orders
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

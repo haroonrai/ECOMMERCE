@@ -1,0 +1,5 @@
+Flask>=3.1.0
+gunicorn>=22.0.0
+waitress>=3.0.0
+whitenoise>=6.7.0
+python-dotenv>=1.0.1

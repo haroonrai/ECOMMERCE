@@ -1,0 +1,24 @@
+{
+  "name": "AURA Healthcare & Derma Labs",
+  "short_name": "AURA Labs",
+  "description": "Dermatologist formulated clinical skincare, active facial serums, botanical shampoos, and pure collagen formulations.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0f17",
+  "theme_color": "#0b0f17",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/static/images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

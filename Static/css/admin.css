@@ -1,0 +1,299 @@
+/* ==========================================================================
+   AETHEL & CO. - STORE OWNER ADMIN DASHBOARD STYLES
+   ========================================================================== */
+
+.admin-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  background: #090d16;
+  border-right: 1px solid var(--border-color);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-sidebar-header {
+  padding: 0 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.admin-sidebar-header h2 {
+  font-size: 1.2rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-nav {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.admin-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.92rem;
+  transition: all var(--transition-fast);
+}
+
+.admin-nav-link:hover, .admin-nav-link.active {
+  color: #fff;
+  background: rgba(99, 102, 241, 0.12);
+  border-left: 3px solid var(--accent-primary);
+}
+
+.admin-nav-link i {
+  font-size: 1.1rem;
+  width: 20px;
+  text-align: center;
+}
+
+.admin-main {
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.admin-topbar {
+  height: 4.5rem;
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-content {
+  padding: 2.5rem;
+  flex: 1;
+}
+
+/* Stat Cards */
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+.stat-card-icon.blue {
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--accent-primary);
+}
+
+.stat-card-icon.green {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent-secondary);
+}
+
+.stat-card-icon.amber {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-gold);
+}
+
+.stat-card-icon.purple {
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+}
+
+.stat-card-info h3 {
+  font-size: 1.6rem;
+  color: #fff;
+  margin-bottom: 0.15rem;
+}
+
+.stat-card-info p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* Admin Tables */
+.admin-table-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.admin-table-header {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.admin-table-header h3 {
+  font-size: 1.15rem;
+  color: #fff;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-table th {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.9rem 1.5rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.admin-table td {
+  padding: 1rem 1.5rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Status Badges */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.status-pill.Processing {
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+}
+
+.status-pill.Shipped {
+  background: rgba(6, 182, 212, 0.15);
+  color: #67e8f9;
+}
+
+.status-pill.Delivered {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+}
+
+.status-pill.Cancelled {
+  background: rgba(244, 63, 94, 0.15);
+  color: #fda4af;
+}
+
+.status-pill.Pending {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fcd34d;
+}
+
+@media (max-width: 900px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+  .admin-sidebar {
+    display: none;
+  }
+  .admin-topbar {
+    padding: 0 1rem;
+    height: 3.8rem;
+  }
+  .admin-content {
+    padding: 1.25rem 0.85rem;
+  }
+  .admin-mobile-nav {
+    display: flex !important;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 0.5rem;
+    padding: 0.65rem 0.85rem;
+    background: #0d131f;
+    border-bottom: 1px solid var(--border-color);
+    -webkit-overflow-scrolling: touch;
+  }
+  .admin-mobile-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--radius-full);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+  }
+  .admin-mobile-nav-link.active {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: rgba(16, 185, 129, 0.4);
+    color: #6ee7b7;
+  }
+  .admin-stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .stat-card {
+    padding: 1rem;
+  }
+  .stat-card-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+  .stat-card-info h3 {
+    font-size: 1.25rem;
+  }
+}
+
+.admin-mobile-nav {
+  display: none;
+}

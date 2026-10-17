@@ -1,0 +1,106 @@
+{% extends "admin/base_admin.html" %}
+
+{% block page_title %}Store & Contact Configurations{% endblock %}
+
+{% block admin_content %}
+<div style="max-width: 900px; margin: 0 auto;">
+  <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 2.25rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+    
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 1.25rem; margin-bottom: 2rem;">
+      <div>
+        <h3 style="font-size: 1.35rem; color: #fff; display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.25rem;">
+          <i class="fa-solid fa-sliders text-emerald-400"></i> Store Contact & WhatsApp Settings
+        </h3>
+        <p style="color: var(--text-secondary); font-size: 0.88rem;">
+          Configure your WhatsApp consultation line, customer support email, phone numbers, and storefront branding.
+        </p>
+      </div>
+
+      <!-- Quick Test WhatsApp Link -->
+      {% if settings.whatsapp_number %}
+        <a href="https://wa.me/{{ clean_whatsapp_number }}?text={{ settings.whatsapp_message | urlencode }}" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           class="btn btn-sm" 
+           style="background: #25D366; color: #fff; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-brands fa-whatsapp" style="font-size: 1.1rem;"></i> Test WhatsApp Link
+        </a>
+      {% endif %}
+    </div>
+
+    <form method="POST" action="/admin/settings">
+      
+      <!-- Section: WhatsApp Integration -->
+      <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 2rem;">
+        <h4 style="color: #6ee7b7; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+          <i class="fa-brands fa-whatsapp text-emerald-400" style="font-size: 1.25rem;"></i> WhatsApp Beauty Helpline Integration
+        </h4>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" style="font-weight: 600;">Your WhatsApp Phone Number *</label>
+            <input type="text" name="whatsapp_number" class="form-control" value="{{ settings.whatsapp_number }}" placeholder="+92 300 1234567 or 03001234567" required>
+            <small style="color: var(--text-muted); font-size: 0.78rem; display: block; margin-top: 0.35rem;">
+              Include your country code (e.g. <code>+923001234567</code> for Pakistan, <code>+1...</code> for US). Customers will chat directly with this number.
+            </small>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" style="font-weight: 600;">Top Bar Promo Discount Code</label>
+            <input type="text" name="banner_discount_code" class="form-control" value="{{ settings.banner_discount_code }}" placeholder="HEALTH20" style="text-transform: uppercase; font-weight: 700;">
+            <small style="color: var(--text-muted); font-size: 0.78rem; display: block; margin-top: 0.35rem;">
+              Displayed in the top promotion bar across all store pages.
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 1.25rem; margin-bottom: 0;">
+          <label class="form-label" style="font-weight: 600;">Default Pre-filled Consultation Message</label>
+          <textarea name="whatsapp_message" class="form-control" rows="2" placeholder="Hi AURA Healthcare, I would like a consultation...">{{ settings.whatsapp_message }}</textarea>
+          <small style="color: var(--text-muted); font-size: 0.78rem; display: block; margin-top: 0.35rem;">
+            When a customer clicks the WhatsApp floating button, this text is automatically drafted for them.
+          </small>
+        </div>
+      </div>
+
+      <!-- Section: Store Identity & Support Contact -->
+      <div style="margin-bottom: 2rem;">
+        <h4 style="color: #fff; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.25rem;">
+          <i class="fa-solid fa-headset text-emerald-400"></i> Store Contact & Support Information
+        </h4>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem;">
+          <div class="form-group">
+            <label class="form-label">Store Brand Name</label>
+            <input type="text" name="store_name" class="form-control" value="{{ settings.store_name }}" placeholder="AURA Healthcare & Derma Labs" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Support Email Address</label>
+            <input type="email" name="store_email" class="form-control" value="{{ settings.store_email }}" placeholder="support@auracare.com" required>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+          <div class="form-group">
+            <label class="form-label">Customer Support Phone (Calling)</label>
+            <input type="text" name="store_phone" class="form-control" value="{{ settings.store_phone }}" placeholder="+92 300 1234567">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Physical Address / Clinic Location</label>
+            <input type="text" name="store_address" class="form-control" value="{{ settings.store_address }}" placeholder="Clinical Derma Complex, Lahore, Pakistan">
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+        <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #10b981, #059669); padding: 0.75rem 2rem; font-size: 1rem;">
+          <i class="fa-solid fa-check"></i> Save & Apply Settings
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}

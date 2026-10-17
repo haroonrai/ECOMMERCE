@@ -1,0 +1,143 @@
+{% extends "admin/base_admin.html" %}
+
+{% block page_title %}Executive Performance Dashboard{% endblock %}
+
+{% block admin_content %}
+<!-- KPI Stats Grid -->
+<div class="admin-stats-grid">
+  <div class="stat-card">
+    <div class="stat-card-icon green">
+      <i class="fa-solid fa-dollar-sign"></i>
+    </div>
+    <div class="stat-card-info">
+      <h3>${{ "%.2f"|format(total_revenue) }}</h3>
+      <p>Gross Store Revenue</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon blue">
+      <i class="fa-solid fa-cart-shopping"></i>
+    </div>
+    <div class="stat-card-info">
+      <h3>{{ total_orders }}</h3>
+      <p>Total Orders Placed</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon purple">
+      <i class="fa-solid fa-boxes-stacked"></i>
+    </div>
+    <div class="stat-card-info">
+      <h3>{{ total_products }}</h3>
+      <p>Active Catalog Items</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon amber">
+      <i class="fa-solid fa-users"></i>
+    </div>
+    <div class="stat-card-info">
+      <h3>{{ total_customers }}</h3>
+      <p>Registered VIP Members</p>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Orders & Inventory Alerts Grid -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+  <!-- Recent Orders Table -->
+  <div class="admin-table-card">
+    <div class="admin-table-header">
+      <h3>Recent Customer Orders</h3>
+      <a href="/admin/orders" class="btn btn-outline btn-sm">View All Orders</a>
+    </div>
+
+    {% if recent_orders %}
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ord in recent_orders %}
+            <tr>
+              <td>
+                <strong style="color: #fff; font-family: 'Space Grotesk', sans-serif;">{{ ord.order_number }}</strong>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">{{ ord.created_at[:10] }}</div>
+              </td>
+              <td>
+                <div style="color: #fff; font-weight: 600;">{{ ord.customer_name }}</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">{{ ord.customer_email }}</div>
+              </td>
+              <td style="font-weight: 700; color: var(--accent-primary);">
+                ${{ "%.2f"|format(ord.total_amount) }}
+              </td>
+              <td>
+                <span class="status-pill {{ ord.order_status }}">{{ ord.order_status }}</span>
+              </td>
+              <td>
+                <a href="/orders/{{ ord.order_number }}" target="_blank" class="btn btn-secondary btn-sm" title="View Receipt">
+                  <i class="fa-solid fa-eye"></i>
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div style="padding: 2.5rem; text-align: center; color: var(--text-muted);">No orders recorded yet.</div>
+    {% endif %}
+  </div>
+
+  <!-- Low Stock Alerts / Quick Actions -->
+  <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <!-- Stock Alert Box -->
+    <div class="admin-table-card" style="padding: 1.5rem;">
+      <h3 style="font-size: 1.1rem; color: #fff; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Stock Warnings
+      </h3>
+      {% if low_stock_products %}
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          {% for lp in low_stock_products %}
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <div>
+                <div style="font-size: 0.88rem; color: #fff; font-weight: 600;">{{ lp.name }}</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">${{ "%.2f"|format(lp.price) }}</div>
+              </div>
+              <span class="status-pill low" style="color: var(--accent-gold); background: rgba(245, 158, 11, 0.15);">
+                {{ lp.stock }} left
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="font-size: 0.88rem; color: var(--accent-secondary);">All products have healthy inventory levels.</p>
+      {% endif %}
+    </div>
+
+    <!-- Quick Shortcuts -->
+    <div class="admin-table-card" style="padding: 1.5rem;">
+      <h3 style="font-size: 1.1rem; color: #fff; margin-bottom: 1rem;">Quick Shortcuts</h3>
+      <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+        <a href="/admin/products/new" class="btn btn-secondary btn-sm" style="justify-content: flex-start;">
+          <i class="fa-solid fa-plus text-accent-primary"></i> Create New Product
+        </a>
+        <a href="/admin/coupons" class="btn btn-secondary btn-sm" style="justify-content: flex-start;">
+          <i class="fa-solid fa-ticket text-emerald-400"></i> Manage Discount Coupons
+        </a>
+        <a href="/admin/orders" class="btn btn-secondary btn-sm" style="justify-content: flex-start;">
+          <i class="fa-solid fa-truck-fast text-cyan-400"></i> Update Shipment Tracking
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

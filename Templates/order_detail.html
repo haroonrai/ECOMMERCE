@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Order #{{ order.order_number }} Tracker | AURA Healthcare & Derma Labs{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2.5rem; padding-bottom: 5rem; max-width: 920px;">
+  <!-- Header -->
+  <div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">
+        <a href="/orders">Orders</a> / <span style="color: #fff;">{{ order.order_number }}</span>
+      </div>
+      <h1 style="font-size: 2.2rem; color: #fff;">Clinical Order & Shipment Tracker</h1>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem;">
+      <button onclick="window.print()" class="btn btn-secondary btn-sm">
+        <i class="fa-solid fa-print"></i> Print Official Invoice
+      </button>
+      <a href="/orders" class="btn btn-outline btn-sm">
+        <i class="fa-solid fa-arrow-left"></i> All Orders
+      </a>
+    </div>
+  </div>
+
+  <!-- Interactive Tracking Timeline -->
+  <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2.5rem 2rem; margin-bottom: 2.5rem;">
+    <h3 style="font-size: 1.15rem; color: #fff; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem;">
+      <i class="fa-solid fa-route text-emerald-400"></i> Live Courier Dispatch & Delivery Status
+    </h3>
+
+    <div class="timeline-steps-mobile" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; position: relative;">
+      <!-- Step 1: Confirmed -->
+      <div style="text-align: center;">
+        <div style="width: 44px; height: 44px; background: #10b981; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; color: white; font-size: 1.1rem; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);">
+          <i class="fa-solid fa-check"></i>
+        </div>
+        <div style="font-size: 0.9rem; font-weight: 700; color: #fff;">Order Confirmed</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">Payment Verified</div>
+      </div>
+
+      <!-- Step 2: Processing -->
+      <div style="text-align: center;">
+        <div style="width: 44px; height: 44px; background: {% if order.order_status in ['Processing', 'Shipped', 'Delivered'] %}#10b981{% else %}rgba(255,255,255,0.1){% endif %}; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; color: white; font-size: 1.1rem;">
+          <i class="fa-solid fa-flask"></i>
+        </div>
+        <div style="font-size: 0.9rem; font-weight: 700; color: #fff;">Clinical Prep</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">Lab Packaging</div>
+      </div>
+
+      <!-- Step 3: Shipped -->
+      <div style="text-align: center;">
+        <div style="width: 44px; height: 44px; background: {% if order.order_status in ['Shipped', 'Delivered'] %}#10b981{% else %}rgba(255,255,255,0.1){% endif %}; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; color: white; font-size: 1.1rem;">
+          <i class="fa-solid fa-truck-fast"></i>
+        </div>
+        <div style="font-size: 0.9rem; font-weight: 700; color: #fff;">In Transit</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">Courier Handover</div>
+      </div>
+
+      <!-- Step 4: Delivered -->
+      <div style="text-align: center;">
+        <div style="width: 44px; height: 44px; background: {% if order.order_status == 'Delivered' %}#10b981{% else %}rgba(255,255,255,0.1){% endif %}; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; color: white; font-size: 1.1rem;">
+          <i class="fa-solid fa-house-chimney"></i>
+        </div>
+        <div style="font-size: 0.9rem; font-weight: 700; color: #fff;">Delivered</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">Doorstep Arrival</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 2rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+      <div style="font-size: 0.88rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <span>Carrier Tracking ID:</span>
+        <code style="color: #6ee7b7; background: rgba(255,255,255,0.05); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700;">{{ order.tracking_number if order.tracking_number else 'Assigned on Dispatch' }}</code>
+        {% if order.tracking_number %}
+          <button type="button" class="btn btn-outline btn-sm" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="copyToClipboard('{{ order.tracking_number }}', 'Tracking ID copied!')" title="Copy tracking ID">
+            <i class="fa-solid fa-copy"></i> Copy
+          </button>
+        {% endif %}
+      </div>
+      <div style="font-size: 0.88rem; color: var(--text-secondary);">
+        Method: <strong style="color: #fff;">{{ order.shipping_method }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Receipt Breakdown -->
+  <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem; margin-bottom: 2rem;">
+    <h3 style="font-size: 1.2rem; color: #fff; margin-bottom: 1.5rem;">Prescribed Formulations</h3>
+
+    <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;">
+      {% for item in items %}
+        <div style="display: flex; align-items: center; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+          <img src="{{ item.image_url }}" alt="{{ item.product_name }}" style="width: 56px; height: 56px; border-radius: var(--radius-md); object-fit: cover;">
+          <div style="flex: 1;">
+            <h4 style="font-size: 0.95rem; color: #fff; margin-bottom: 0.2rem;">{{ item.product_name }}</h4>
+            <span style="font-size: 0.82rem; color: var(--text-muted);">Quantity: {{ item.quantity }} &bull; ${{ "%.2f"|format(item.price) }} each</span>
+          </div>
+          <div style="font-weight: 700; color: #fff;">
+            ${{ "%.2f"|format(item.price * item.quantity) }}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Summary Details -->
+    <div style="background: rgba(0,0,0,0.2); border-radius: var(--radius-md); padding: 1.25rem;">
+      <div class="summary-line">
+        <span>Subtotal</span>
+        <span>${{ "%.2f"|format(order.subtotal) }}</span>
+      </div>
+      {% if order.discount_amount and order.discount_amount > 0 %}
+        <div class="summary-line" style="color: var(--accent-secondary);">
+          <span>Promotional Discount ({{ order.coupon_code }})</span>
+          <span>-${{ "%.2f"|format(order.discount_amount) }}</span>
+        </div>
+      {% endif %}
+      <div class="summary-line">
+        <span>Shipping Cost</span>
+        <span style="color: var(--accent-secondary);">${{ "%.2f"|format(order.shipping_cost) }}</span>
+      </div>
+      <div class="summary-line">
+        <span>Taxes (8%)</span>
+        <span>${{ "%.2f"|format(order.tax_amount) }}</span>
+      </div>
+      <div class="summary-line total">
+        <span>Total Amount</span>
+        <span style="color: #10b981; font-size: 1.3rem;">${{ "%.2f"|format(order.total_amount) }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

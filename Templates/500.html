@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}System Advisory (500) | AURA Healthcare & Derma Labs{% endblock %}
+
+{% block content %}
+<div class="container" style="padding: 5rem 1rem; text-align: center; max-width: 640px; margin: 0 auto;">
+  <div style="width: 90px; height: 90px; background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #f43f5e; font-size: 2.4rem;">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+  </div>
+  
+  <span style="font-size: 0.9rem; font-weight: 700; color: #fda4af; text-transform: uppercase; letter-spacing: 0.08em;">Error 500 &bull; Laboratory System Notice</span>
+  <h1 style="font-size: 2.5rem; color: #fff; margin: 0.5rem 0 1rem; font-family: 'Space Grotesk', sans-serif;">Temporary Interruption</h1>
+  
+  <p style="color: var(--text-secondary); font-size: 1rem; line-height: 1.6; margin-bottom: 2rem;">
+    Our clinical servers are currently performing scheduled maintenance or processing high prescription volumes. Please refresh or return shortly.
+  </p>
+
+  <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+    <a href="/" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #10b981, #059669);">
+      <i class="fa-solid fa-rotate-right"></i> Reload Application
+    </a>
+    <a href="/shop" class="btn btn-secondary btn-lg">
+      <i class="fa-solid fa-flask-vial"></i> Explore Catalog
+    </a>
+  </div>
+</div>
+{% endblock %}

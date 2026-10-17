@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}AURA Healthcare & Derma Labs | Medical-Grade Skincare & Botanical Serums{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section" style="background: radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.18) 0%, rgba(11, 15, 23, 0) 60%), radial-gradient(circle at 20% 80%, rgba(6, 182, 212, 0.12) 0%, rgba(11, 15, 23, 0) 50%);">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-badge" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: #6ee7b7;">
+          <i class="fa-solid fa-flask-vial"></i> DERMATOLOGIST-FORMULATED HEALTHCARE
+        </div>
+        <h1 class="hero-title">
+          Clinical Precision.<br>
+          <span class="text-gradient" style="background: linear-gradient(135deg, #ffffff 30%, #a7f3d0 70%, #10b981 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Pure Active Botanicals.</span>
+        </h1>
+        <p class="hero-subtitle">
+          Medical-grade active facial serums, restorative peptide shampoos, barrier repair ceramides, and pure marine collagen engineered to transform skin and hair health.
+        </p>
+        <div class="hero-cta">
+          <a href="/shop" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);">
+            <i class="fa-solid fa-sparkles"></i> Explore Formulations
+          </a>
+          <button type="button" class="btn btn-secondary btn-lg" onclick="openRoutineAnalyzer()">
+            <i class="fa-solid fa-wand-magic-sparkles text-emerald-400"></i> Routine Finder
+          </button>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat-item">
+            <h4>100%</h4>
+            <p>Paraben & Sulfate Free</p>
+          </div>
+          <div class="stat-item">
+            <h4>98.4%</h4>
+            <p>Clinical Efficacy Rate</p>
+          </div>
+          <div class="stat-item">
+            <h4>Derm</h4>
+            <p>Approved & Tested</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-image-wrapper">
+        <div class="hero-card-preview">
+          <img src="/static/images/products/serum_dropper.jpg" alt="Botanical Cellular Renewal Vitamin C Serum">
+          <div class="hero-card-floating-pill">
+            <div>
+              <span style="font-size: 0.75rem; text-transform: uppercase; color: #10b981; font-weight: 700;">Clinical Radiance Elixir</span>
+              <h4 style="font-size: 1rem; color: #fff;">20% Vitamin C & Niacinamide</h4>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 1.2rem; font-weight: 800; color: #fff;">$68.00</span>
+              <a href="/product/botanical-cellular-renewal-vitamin-c-serum" class="btn btn-primary btn-sm" style="background: #10b981; display: block; margin-top: 0.25rem;">
+                View Formula
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Clinical Assurance Strip -->
+<div class="features-strip">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-box">
+        <div class="feature-icon" style="background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.25); color: #10b981;"><i class="fa-solid fa-flask"></i></div>
+        <div class="feature-info">
+          <h5>Active Clinical Actives</h5>
+          <p>Potent 20% Vit-C, Retinol & Niacinamide</p>
+        </div>
+      </div>
+      <div class="feature-box">
+        <div class="feature-icon" style="background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.25); color: #10b981;"><i class="fa-solid fa-leaf"></i></div>
+        <div class="feature-info">
+          <h5>100% Sulfate & Paraben Free</h5>
+          <p>Gentle on barrier & sensitive skin</p>
+        </div>
+      </div>
+      <div class="feature-box">
+        <div class="feature-icon" style="background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.25); color: #10b981;"><i class="fa-solid fa-truck-fast"></i></div>
+        <div class="feature-info">
+          <h5>Doorstep Courier Delivery</h5>
+          <p>TCS, Leopards & Express Dispatch</p>
+        </div>
+      </div>
+      <div class="feature-box">
+        <div class="feature-icon" style="background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.25); color: #10b981;"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+        <div class="feature-info">
+          <h5>Cash on Delivery &amp; Cards</h5>
+          <p>Zero advance COD or instant card</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Curated Categories Section -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Clinical Healthcare Categories</h2>
+        <p class="section-subtitle">Targeted dermatological treatments designed for visible skin and hair transformation</p>
+      </div>
+      <a href="/shop" class="btn btn-outline btn-sm">Browse All Categories <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+
+    <div class="category-grid">
+      {% for cat in categories %}
+        <a href="/shop?category={{ cat.slug }}" class="category-card">
+          <img src="{{ cat.image_url }}" alt="{{ cat.name }}">
+          <div class="category-card-content">
+            <h3>{{ cat.name }}</h3>
+            <span style="color: #6ee7b7;">Explore Treatments <i class="fa-solid fa-arrow-right"></i></span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Featured Masterpiece Products -->
+<section class="section" style="background: rgba(17, 24, 39, 0.3);">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <div style="font-size: 0.8rem; font-weight: 700; color: #10b981; text-transform: uppercase; margin-bottom: 0.25rem;">Doctor Recommended</div>
+        <h2 class="section-title">Essential Healthcare & Serums</h2>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <a href="/shop" class="btn btn-secondary btn-sm">View All 20 Formulations</a>
+      </div>
+    </div>
+
+    <!-- Mobile Quick Category Navigation Pills -->
+    <div class="mobile-category-pills-wrapper" style="margin-bottom: 1.5rem;">
+      <div class="mobile-category-pills">
+        <a href="/shop" class="category-pill active">
+          <i class="fa-solid fa-sparkles"></i> All Treatments
+        </a>
+        {% for cat in categories %}
+          <a href="/shop?category={{ cat.slug }}" class="category-pill">
+            {% if cat.slug == 'serums' %}
+              <i class="fa-solid fa-droplet text-emerald-400"></i>
+            {% elif cat.slug == 'haircare' %}
+              <i class="fa-solid fa-pump-soap text-emerald-400"></i>
+            {% elif cat.slug == 'creams' %}
+              <i class="fa-solid fa-jar text-emerald-400"></i>
+            {% elif cat.slug == 'cleansers' %}
+              <i class="fa-solid fa-hand-holding-droplet text-emerald-400"></i>
+            {% elif cat.slug == 'supplements' %}
+              <i class="fa-solid fa-capsules text-emerald-400"></i>
+            {% else %}
+              <i class="fa-solid fa-flask text-emerald-400"></i>
+            {% endif %}
+            {{ cat.name }}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="products-grid">
+      {% for product in featured_products %}
+        <div class="product-card">
+          {% if product.badge %}
+            <div class="product-badge" style="color: #6ee7b7; border-color: rgba(16, 185, 129, 0.3);">{{ product.badge }}</div>
+          {% endif %}
+          
+          <button type="button" class="wishlist-toggle-btn {% if product.id in user_wishlist_ids %}active{% endif %}" data-product-id="{{ product.id }}" title="Save to Remedies">
+            <i class="{% if product.id in user_wishlist_ids %}fa-solid{% else %}fa-regular{% endif %} fa-heart"></i>
+          </button>
+
+          <div class="product-thumbnail-box">
+            <a href="/product/{{ product.slug }}">
+              <img src="{{ product.image_url }}" alt="{{ product.name }}">
+            </a>
+          </div>
+
+          <div class="product-info">
+            <div class="product-category-tag" style="color: #6ee7b7;">{{ product.category_name }}</div>
+            <h3 class="product-title">
+              <a href="/product/{{ product.slug }}">{{ product.name }}</a>
+            </h3>
+
+            <div class="product-rating">
+              <i class="fa-solid fa-star"></i>
+              <strong style="color: #fff;">{{ "%.1f"|format(product.rating) }}</strong>
+              <span>({{ product.review_count }} verified clinic reviews)</span>
+            </div>
+
+            <div class="product-price-row">
+              <span class="current-price">${{ "%.2f"|format(product.price) }}</span>
+              {% if product.original_price and product.original_price > product.price %}
+                <span class="original-price">${{ "%.2f"|format(product.original_price) }}</span>
+                <span class="discount-tag">Save {{ ((product.original_price - product.price) / product.original_price * 100)|int }}%</span>
+              {% endif %}
+            </div>
+
+            <div class="product-card-actions">
+              <form class="add-to-cart-form" style="flex: 1;">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="btn btn-primary btn-block btn-sm" style="background: linear-gradient(135deg, #10b981, #059669);">
+                  <i class="fa-solid fa-bag-shopping"></i> Add to Bag
+                </button>
+              </form>
+              <a href="/product/{{ product.slug }}" class="btn btn-secondary btn-sm" title="View Ingredients & Specs">
+                <i class="fa-solid fa-flask"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Healthcare Highlight Promotional Banner -->
+<section class="section" style="padding: 4rem 0;">
+  <div class="container">
+    <div class="promo-banner-card" style="background: linear-gradient(135deg, rgba(6, 78, 59, 0.9), rgba(15, 23, 42, 0.95)), url('/static/images/products/botanical_shampoo.jpg') center/cover; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-xl); position: relative; overflow: hidden; box-shadow: var(--shadow-lg);">
+      <div style="max-width: 600px; position: relative; z-index: 2;">
+        <span class="badge-pill" style="background: rgba(16, 185, 129, 0.25); color: #6ee7b7; padding: 0.35rem 0.85rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;" onclick="copyToClipboard('HEALTH20', 'Promo code HEALTH20 copied!')" title="Click to copy coupon code">
+          <i class="fa-solid fa-copy"></i> PROMO CODE: HEALTH20 (Tap to Copy)
+        </span>
+        <h2 style="font-size: 2.8rem; color: #fff; margin: 1rem 0 1rem; line-height: 1.15;">
+          Transform Your Daily Health, Skin & Hair Ritual
+        </h2>
+        <p style="color: var(--text-secondary); font-size: 1.05rem; margin-bottom: 2rem;">
+          Enjoy 20% off all active facial serums, scalp regrowth tonics, and marine collagen complexes. Pay securely via Cash on Delivery or Credit/Debit Card.
+        </p>
+        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+          <a href="/shop?category=serums" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #10b981, #059669);">
+            Shop Active Serums
+          </a>
+          <a href="/shop?category=haircare" class="btn btn-secondary btn-lg">
+            Shop Botanical Shampoos
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

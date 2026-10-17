@@ -1,0 +1,92 @@
+{% extends "admin/base_admin.html" %}
+
+{% block page_title %}{% if product %}Edit: {{ product.name }}{% else %}Create New Formulation{% endif %}{% endblock %}
+
+{% block admin_content %}
+<div style="max-width: 800px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 2.5rem;">
+  <div style="margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <h2 style="font-size: 1.5rem; color: #fff;">{% if product %}Edit Formulation Details{% else %}Add New Catalog Formulation{% endif %}</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">Fill in the active ingredients, pricing, and visual assets.</p>
+    </div>
+    <a href="/admin/products" class="btn btn-outline btn-sm">
+      <i class="fa-solid fa-arrow-left"></i> Back to Catalog
+    </a>
+  </div>
+
+  <form method="POST" action="{% if product %}/admin/products/{{ product.id }}/edit{% else %}/admin/products/new{% endif %}">
+    <div class="form-group">
+      <label class="form-label">Formulation Name *</label>
+      <input type="text" name="name" class="form-control" value="{{ product.name if product else '' }}" placeholder="e.g. Niacinamide 10% + Zinc Pore Refining Serum" required>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+      <div class="form-group">
+        <label class="form-label">Category *</label>
+        <select name="category_id" class="form-control" required style="cursor: pointer;">
+          {% for cat in categories %}
+            <option value="{{ cat.id }}" {% if product and product.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Clinical Badge</label>
+        <input type="text" name="badge" class="form-control" value="{{ product.badge if product else '' }}" placeholder="e.g. Best Seller, Derm Choice, Acne Defense">
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem;">
+      <div class="form-group">
+        <label class="form-label">Selling Price ($) *</label>
+        <input type="number" step="0.01" name="price" class="form-control" value="{{ product.price if product else '' }}" placeholder="54.00" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Original / MSRP Price ($)</label>
+        <input type="number" step="0.01" name="original_price" class="form-control" value="{{ product.original_price if product and product.original_price else '' }}" placeholder="72.00">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Stock Quantity (Units) *</label>
+        <input type="number" name="stock" class="form-control" value="{{ product.stock if product else '30' }}" required>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Primary Image URL or Static Path *</label>
+      <input type="text" name="image_url" class="form-control" value="{{ product.image_url if product else '/static/images/products/serum_dropper.jpg' }}" placeholder="/static/images/products/..." required>
+      <span style="font-size: 0.75rem; color: var(--text-muted);">Local options: <code>/static/images/products/serum_dropper.jpg</code>, <code>botanical_shampoo.jpg</code>, <code>restorative_cream.jpg</code>, <code>scalp_tonic.jpg</code>, <code>body_wash_botanical.jpg</code>.</span>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Active Ingredients Tagline</label>
+      <input type="text" name="short_description" class="form-control" value="{{ product.short_description if product else '' }}" placeholder="10% Pure Niacinamide, 1% Zinc PCA, and Centella Asiatica.">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Full Clinical Description & Instructions *</label>
+      <textarea name="description" rows="5" class="form-control" placeholder="Clinical benefits, dermatologist test results, application instructions, and full ingredient list..." required>{{ product.description if product else '' }}</textarea>
+    </div>
+
+    <div style="display: flex; gap: 2rem; margin: 1.5rem 0; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: var(--radius-md);">
+      <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: #fff; font-size: 0.9rem;">
+        <input type="checkbox" name="is_featured" value="1" {% if product and product.is_featured %}checked{% endif %} style="accent-color: #10b981;">
+        <span>Feature on Homepage Showcase</span>
+      </label>
+
+      <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: #fff; font-size: 0.9rem;">
+        <input type="checkbox" name="is_trending" value="1" {% if product and product.is_trending %}checked{% endif %} style="accent-color: #10b981;">
+        <span>Mark as Trending Remedy</span>
+      </label>
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+      <a href="/admin/products" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #10b981, #059669);">
+        <i class="fa-solid fa-floppy-disk"></i> Save Formulation
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0f17">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
+  <title>{% block title %}AURA Botanical & Derma Labs | Premium Skincare, Serums & Shampoos{% endblock %}</title>
+  <meta name="description" content="Botanical active facial serums, herbal shampoos, barrier repair creams, and organic beauty elixirs.">
+  
+  <!-- PWA & SEO Meta -->
+  <link rel="manifest" href="/static/manifest.json">
+  <link rel="apple-touch-icon" href="/static/images/products/serum_dropper.jpg">
+  <meta property="og:site_name" content="AURA Botanical & Derma Labs">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{% block og_title %}AURA Botanical & Derma Labs | Premium Skincare, Serums & Shampoos{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Botanical active facial serums, herbal shampoos, barrier repair creams, and organic beauty elixirs.{% endblock %}">
+  <meta property="og:image" content="{% block og_image %}/static/images/products/serum_dropper.jpg{% endblock %}">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- FontAwesome 6 & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/main.css?v=20260918_mobile_v7">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  {% set promo_code = store_settings.banner_discount_code if store_settings.banner_discount_code else 'HEALTH20' %}
+  <div class="top-bar">
+    <div class="container top-bar-content">
+      <div class="top-bar-marquee"><i class="fa-solid fa-seedling text-emerald-400"></i> Pure Botanical Skincare & Haircare &bull; Direct Card &amp; Cash on Delivery &bull; Code: <strong style="color: #6ee7b7; cursor: pointer;" onclick="copyToClipboard('{{ promo_code }}', 'Coupon code copied!')" title="Click to copy code">{{ promo_code }}</strong></div>
+      <div class="top-bar-links">
+        <a href="/shop"><i class="fa-solid fa-spa"></i> Beauty Formulations</a>
+        {% if session.get('user_id') and session.get('is_admin') %}
+          <a href="/admin" style="color: #a5b4fc; font-weight: 700;"><i class="fa-solid fa-shield-halved"></i> Store Admin Portal</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Site Header -->
+  <header class="site-header">
+    <div class="container">
+      <nav class="navbar">
+        <!-- Mobile Hamburger Button -->
+        <button type="button" id="mobile-nav-toggle" class="mobile-menu-btn" aria-label="Open Navigation Menu">
+          <i class="fa-solid fa-bars-staggered"></i>
+        </button>
+
+        <!-- Brand Logo -->
+        <a href="/" class="brand-logo">
+          <div class="logo-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-spa"></i></div>
+          <span>AURA<span style="color: #10b981;">HEALTHCARE</span></span>
+        </a>
+
+        <!-- Main Desktop Navigation -->
+        <ul class="nav-menu">
+          <li><a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
+          <li><a href="/shop" class="nav-link {% if request.path == '/shop' and not request.args.get('category') %}active{% endif %}">All Formulations</a></li>
+          <li><a href="/shop?category=serums" class="nav-link {% if request.args.get('category') == 'serums' %}active{% endif %}"><i class="fa-solid fa-droplet text-emerald-400"></i> Serums</a></li>
+          <li><a href="/shop?category=haircare" class="nav-link {% if request.args.get('category') == 'haircare' %}active{% endif %}">Shampoos</a></li>
+          <li><a href="/shop?category=creams" class="nav-link {% if request.args.get('category') == 'creams' %}active{% endif %}">Creams</a></li>
+          <li><a href="/shop?category=cleansers" class="nav-link {% if request.args.get('category') == 'cleansers' %}active{% endif %}">Cleansers</a></li>
+          <li><a href="/shop?category=supplements" class="nav-link {% if request.args.get('category') == 'supplements' %}active{% endif %}">Collagen & Health</a></li>
+        </ul>
+
+        <!-- Live Search Bar -->
+        <div class="header-search">
+          <div class="search-input-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="header-search-input" class="search-input" placeholder="Search Vitamin C, Shampoo, Collagen, Retinol..." autocomplete="off">
+          </div>
+          <div id="search-dropdown-results" style="display: none; position: absolute; top: 105%; left: 0; right: 0; background: #111827; border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); z-index: 50; overflow: hidden;"></div>
+        </div>
+
+        <!-- Header Actions -->
+        <div class="header-actions">
+          <!-- Mobile Search Trigger Button -->
+          <button type="button" class="action-btn mobile-search-btn" id="open-mobile-search-btn" title="Search Formulations">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+
+          <!-- Wishlist Button -->
+          <a href="/wishlist" class="action-btn" title="Saved Remedies">
+            <i class="fa-regular fa-heart"></i>
+            <span class="badge-count wishlist-badge-count" style="display: {% if wishlist_count and wishlist_count > 0 %}flex{% else %}none{% endif %};">
+              {{ wishlist_count if wishlist_count else 0 }}
+            </span>
+          </a>
+
+          <!-- Cart Slide Drawer Trigger -->
+          <a href="javascript:void(0)" class="action-btn open-cart-btn" title="Shopping Bag">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span class="badge-count cart-badge-count" style="background: #10b981; display: {% if cart_count and cart_count > 0 %}flex{% else %}none{% endif %};">
+              {{ cart_count if cart_count else 0 }}
+            </span>
+          </a>
+
+          <!-- User Account Dropdown -->
+          {% if session.get('user_id') %}
+            <a href="/profile" class="btn btn-secondary btn-sm desktop-auth-btn" style="display: flex; align-items: center; gap: 0.4rem;">
+              <i class="fa-solid fa-user-circle"></i>
+              <span>{{ session.get('user_name', 'Account').split(' ')[0] }}</span>
+            </a>
+            <a href="/logout" class="action-btn desktop-auth-btn" title="Sign Out" style="width: 34px; height: 34px;">
+              <i class="fa-solid fa-arrow-right-from-bracket" style="font-size: 0.85rem;"></i>
+            </a>
+          {% else %}
+            <a href="/auth" class="btn btn-primary btn-sm desktop-auth-btn" style="background: linear-gradient(135deg, #10b981, #059669);">
+              <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
+            </a>
+          {% endif %}
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Flash Notification Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container" style="margin-top: 1.5rem;">
+        {% for category, msg in messages %}
+          <div style="background: {% if category == 'error' %}rgba(244, 63, 94, 0.15){% else %}rgba(16, 185, 129, 0.15){% endif %}; border: 1px solid {% if category == 'error' %}rgba(244, 63, 94, 0.3){% else %}rgba(16, 185, 129, 0.3){% endif %}; color: {% if category == 'error' %}#fca5a5{% else %}#a7f3d0{% endif %}; padding: 0.85rem 1.25rem; border-radius: var(--radius-md); font-size: 0.9rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.6rem;">
+            <i class="fa-solid {% if category == 'error' %}fa-circle-exclamation{% else %}fa-circle-check{% endif %}"></i>
+            <span>{{ msg }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Main Body Content -->
+  <main style="flex: 1;">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Slide-in Cart Drawer -->
+  <div id="cart-drawer-overlay" class="cart-drawer-overlay"></div>
+  <aside id="cart-drawer" class="cart-drawer">
+    <div class="cart-drawer-header">
+      <h3 style="font-size: 1.15rem; color: #fff; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-spa text-emerald-400"></i> Healthcare Bag
+      </h3>
+      <button id="close-cart-btn" style="color: var(--text-secondary); cursor: pointer; font-size: 1.1rem;">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div id="cart-drawer-items" class="cart-drawer-items">
+      {% if cart and cart['items'] %}
+        {% for item in cart['items'] %}
+          <div class="drawer-item">
+            <div class="drawer-item-img">
+              <img src="{{ item.image_url }}" alt="{{ item.name }}">
+            </div>
+            <div class="drawer-item-details">
+              <div class="drawer-item-title">{{ item.name }}</div>
+              <div class="drawer-item-price" style="color: #10b981;">${{ "%.2f"|format(item.price) }}</div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="qty-control" style="transform: scale(0.85); transform-origin: left center;">
+                  <button type="button" class="qty-btn" onclick="updateCartItemQty({{ item.product_id }}, {{ item.quantity - 1 }})">-</button>
+                  <span class="qty-input">{{ item.quantity }}</span>
+                  <button type="button" class="qty-btn" onclick="updateCartItemQty({{ item.product_id }}, {{ item.quantity + 1 }})">+</button>
+                </div>
+                <button type="button" onclick="removeCartItem({{ item.product_id }})" style="color: var(--text-muted); font-size: 0.8rem; cursor: pointer;">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+          <i class="fa-solid fa-flask-vial" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5; color: #10b981;"></i>
+          <p style="font-size: 1rem; color: #fff; margin-bottom: 0.5rem;">Your healthcare bag is empty</p>
+          <p style="font-size: 0.85rem;">Discover our dermatologist-certified serums and shampoos.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="cart-drawer-footer">
+      <div class="drawer-total-row">
+        <span>Subtotal</span>
+        <span id="cart-drawer-subtotal" style="color: #10b981;">${{ "%.2f"|format(cart.subtotal if cart else 0.0) }}</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <a href="/checkout" class="btn btn-primary btn-block" style="background: linear-gradient(135deg, #10b981, #059669);">
+          <i class="fa-solid fa-lock"></i> Checkout (Direct Card &amp; COD)
+        </a>
+        <a href="/cart" class="btn btn-secondary btn-block" onclick="closeCartDrawer()">
+          View Full Bag & Apply Coupons
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Toast Stack -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Master Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="/" class="brand-logo" style="margin-bottom: 0.5rem;">
+            <div class="logo-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-spa"></i></div>
+            <span>AURA<span style="color: #10b981;">HEALTHCARE</span></span>
+          </a>
+          <p>Organic botanical skincare, active cellular serums, sulfate-free herbal shampoos, and pure hydrolyzed marine collagen formulations.</p>
+          <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+            <span style="font-size: 0.78rem; background: rgba(16, 185, 129, 0.15); color: #6ee7b7; padding: 0.25rem 0.6rem; border-radius: var(--radius-full);"><i class="fa-solid fa-check"></i> Dermatologically Tested</span>
+            <span style="font-size: 0.78rem; background: rgba(16, 185, 129, 0.15); color: #6ee7b7; padding: 0.25rem 0.6rem; border-radius: var(--radius-full);"><i class="fa-solid fa-leaf"></i> 100% Organic</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Collections</h4>
+          <ul class="footer-links">
+            <li><a href="/shop?category=serums">Active Facial Serums</a></li>
+            <li><a href="/shop?category=haircare">Botanical Shampoos</a></li>
+            <li><a href="/shop?category=creams">Barrier Repair Creams</a></li>
+            <li><a href="/shop?category=cleansers">Gentle Cleansers</a></li>
+            <li><a href="/shop?category=supplements">Collagen & Vitamins</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Payment & Support</h4>
+          <ul class="footer-links">
+            <li><a href="/orders">Track Your Parcel</a></li>
+            <li><a href="/cart">Shopping Bag</a></li>
+            <li><a href="/wishlist">Saved Formulations</a></li>
+            <li><a href="/profile">My Account</a></li>
+            <li><span style="color: #6ee7b7;"><i class="fa-solid fa-shield-halved"></i> Direct Card &bull; Cash on Delivery &bull; 3DS</span></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Special Offers & VIP Code</h4>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">Use code <strong>HEALTH20</strong> at checkout for 20% off all organic serums and shampoos.</p>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="email" placeholder="Your email address" class="form-control" style="font-size: 0.85rem; padding: 0.55rem 0.85rem;">
+            <button class="btn btn-primary btn-sm" style="background: #10b981;" onclick="showToast('Thank you for subscribing to Botanical Skincare updates!')">Join</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>&copy; 2026 AURA Botanical & Derma Labs. Pure Botanicals & Radiant Care.</div>
+        <div style="display: flex; gap: 1.5rem;">
+          <a href="/admin" style="color: var(--text-muted);"><i class="fa-solid fa-lock"></i> Store Admin</a>
+          <a href="#">Dermatology Safety Policy</a>
+          <a href="#">Ingredient Standards</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Mobile Slide-Out Navigation Drawer -->
+  <div id="mobile-nav-overlay" class="mobile-nav-overlay" onclick="closeMobileMenu()"></div>
+  <nav id="mobile-nav-drawer" class="mobile-nav-drawer" aria-label="Mobile Navigation">
+    <div class="mobile-nav-header">
+      <a href="/" class="brand-logo" onclick="closeMobileMenu()">
+        <div class="logo-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fa-solid fa-spa"></i></div>
+        <span>AURA<span style="color: #10b981;">HEALTHCARE</span></span>
+      </a>
+      <button type="button" class="close-mobile-nav-btn" onclick="closeMobileMenu()" aria-label="Close Menu">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Quick User Status Card in Drawer -->
+    <div class="mobile-nav-user-card">
+      {% if session.get('user_id') %}
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700;">
+            {{ session.get('user_name', 'U')[0]|upper }}
+          </div>
+          <div>
+            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">{{ session.get('user_name') }}</div>
+            <div style="font-size: 0.8rem; color: #10b981;">{{ session.get('user_email', 'Verified Customer') }}</div>
+          </div>
+        </div>
+      {% else %}
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">Welcome to AURA</div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary);">Sign in for fast orders & tracking</div>
+          </div>
+          <a href="/auth" class="btn btn-primary btn-sm" style="background: #10b981;" onclick="closeMobileMenu()">Sign In</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Mobile Drawer Search -->
+    <div style="padding: 1rem 1.25rem 0.5rem;">
+      <form action="/shop" method="GET" class="mobile-drawer-search-form">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" name="q" placeholder="Search serums, shampoo, retinol..." autocomplete="off">
+        <button type="submit" aria-label="Search"><i class="fa-solid fa-arrow-right"></i></button>
+      </form>
+    </div>
+
+    <!-- Mobile Navigation Links -->
+    <div class="mobile-nav-body">
+      <div class="mobile-nav-section-title">Product Catalog</div>
+      <ul class="mobile-nav-list">
+        <li>
+          <a href="/" class="mobile-nav-item {% if request.path == '/' %}active{% endif %}" onclick="closeMobileMenu()">
+            <span><i class="fa-solid fa-house text-emerald-400"></i> Home</span>
+            <i class="fa-solid fa-chevron-right arrow"></i>
+          </a>
+        </li>
+        <li>
+          <a href="/shop" class="mobile-nav-item {% if request.path == '/shop' and not request.args.get('category') %}active{% endif %}" onclick="closeMobileMenu()">
+            <span><i class="fa-solid fa-flask-vial text-emerald-400"></i> All Formulations</span>
+            <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7; font-size: 0.75rem; padding: 2px 8px; border-radius: 99px;">20 Items</span>
+          </a>
+        </li>
+        <li>
+          <a href="/shop?category=serums" class="mobile-nav-item {% if request.args.get('category') == 'serums' %}active{% endif %}" onclick="closeMobileMenu()">
+            <span><i class="fa-solid fa-droplet text-emerald-400"></i> Active Serums</span>
+            <i class="fa-solid fa-chevron-right arrow"></i>
+          </a>
+        </li>
+        <li>
+          <a href="/shop?category=haircare" class="mobile-nav-item {% if request.args.get('category') == 'haircare' %}active{% endif %}" onclick="closeMobileMenu()">
+            <span><i class="fa-solid fa-pump-soap text-emerald-400"></i> Botanical Shampoos</span>
+            <i class="fa-solid fa-chevron-right arrow"></i>
+          </a>
+        </li>
+        <li>
+          <a href="/shop?category=creams" class="mobile-nav-item {% if request.args.get('category') == 'creams' %}active{% endif %}" onclick="closeMobileMenu()">
+            <span><i class="fa-solid fa-jar text-emerald-400"></i> Barrier Creams</span>
+            <i class="fa-solid fa-chevron-right arrow"></i>
+          </a>
+        </li>
+        <li>
+          <a href="/shop?category=cleansers" class="mobile-nav-item {% if request.args.get('category') == 'cleansers' %}active{% endif %}" onclick="closeMobileMenu()">
+            <span><i class="fa-solid fa-hand-holding-droplet text-emerald-400"></i> Gentle Cleansers</span>
+            <i class="fa-solid fa-chevron-right arrow"></i>
+          </a>
+        </li>
+        <li>
+          <a href="/shop?category=supplements" class="mobile-nav-item {% if request.args.get('category') == 'supplements' %}active{% endif %}" onclick="closeMobileMenu()">
+            <span><i class="fa-solid fa-capsules text-emerald-400"></i> Collagen & Supplements</span>
+            <i class="fa-solid fa-chevron-right arrow"></i>
+          </a>
+        </li>
+      </ul>
+
+      <div class="mobile-nav-section-title" style="margin-top: 1.5rem;">Account & Orders</div>
+      <ul class="mobile-nav-list">
+        <li>
+          <a href="/orders" class="mobile-nav-item" onclick="closeMobileMenu()">
+            <span><i class="fa-solid fa-truck-fast text-emerald-400"></i> Track Orders</span>
+            <i class="fa-solid fa-chevron-right arrow"></i>
+          </a>
+        </li>
+        <li>
+          <a href="/wishlist" class="mobile-nav-item" onclick="closeMobileMenu()">
+            <span><i class="fa-regular fa-heart text-emerald-400"></i> Saved Remedies</span>
+            <span class="badge-count wishlist-badge-count" style="display: {% if wishlist_count and wishlist_count > 0 %}flex{% else %}none{% endif %}; font-size: 0.75rem;">
+              {{ wishlist_count if wishlist_count else 0 }}
+            </span>
+          </a>
+        </li>
+        {% if session.get('user_id') %}
+          <li>
+            <a href="/profile" class="mobile-nav-item" onclick="closeMobileMenu()">
+              <span><i class="fa-solid fa-user text-emerald-400"></i> My Account</span>
+              <i class="fa-solid fa-chevron-right arrow"></i>
+            </a>
+          </li>
+          {% if session.get('is_admin') %}
+            <li>
+              <a href="/admin" class="mobile-nav-item" style="background: rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.3);" onclick="closeMobileMenu()">
+                <span style="color: #a5b4fc;"><i class="fa-solid fa-shield-halved"></i> Store Admin Portal</span>
+                <i class="fa-solid fa-chevron-right arrow"></i>
+              </a>
+            </li>
+          {% endif %}
+          <li>
+            <a href="/logout" class="mobile-nav-item" style="color: #f87171;" onclick="closeMobileMenu()">
+              <span><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</span>
+            </a>
+          </li>
+        {% else %}
+          <li>
+            <a href="/auth" class="mobile-nav-item" onclick="closeMobileMenu()">
+              <span><i class="fa-solid fa-arrow-right-to-bracket text-emerald-400"></i> Customer Login / Register</span>
+              <i class="fa-solid fa-chevron-right arrow"></i>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Mobile Fullscreen Search Modal -->
+  <div id="mobile-search-modal" class="mobile-search-modal">
+    <div class="mobile-search-modal-header">
+      <form action="/shop" method="GET" class="mobile-search-modal-form" id="mobile-search-form">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="mobile-search-input" name="q" placeholder="Search Vitamin C, Retinol, Shampoos..." autocomplete="off" autofocus>
+        <button type="button" class="clear-search-btn" id="clear-mobile-search-btn" style="display: none;" onclick="clearMobileSearchInput()" aria-label="Clear Search">
+          <i class="fa-solid fa-circle-xmark"></i>
+        </button>
+        <button type="button" class="close-search-modal-btn" onclick="closeMobileSearch()" aria-label="Close Search">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </form>
+    </div>
+    <div class="mobile-search-modal-body">
+      <!-- Dynamic Live Search Results -->
+      <div id="mobile-live-search-results" style="display: none; margin-bottom: 1.5rem;"></div>
+
+      <div id="mobile-search-quick-tags-box">
+        <div class="mobile-search-quick-tags">
+          <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Popular Formulations:</span>
+          <a href="/shop?q=Vitamin+C" class="search-tag" onclick="closeMobileSearch()"><i class="fa-solid fa-droplet text-emerald-400"></i> Vitamin C</a>
+          <a href="/shop?q=Retinol" class="search-tag" onclick="closeMobileSearch()"><i class="fa-solid fa-flask text-emerald-400"></i> Retinol 1%</a>
+          <a href="/shop?q=Shampoo" class="search-tag" onclick="closeMobileSearch()"><i class="fa-solid fa-pump-soap text-emerald-400"></i> Botanical Shampoo</a>
+          <a href="/shop?q=Collagen" class="search-tag" onclick="closeMobileSearch()"><i class="fa-solid fa-capsules text-emerald-400"></i> Marine Collagen</a>
+          <a href="/shop?q=Ceramide" class="search-tag" onclick="closeMobileSearch()"><i class="fa-solid fa-jar text-emerald-400"></i> Ceramide Cream</a>
+          <a href="/shop?q=Niacinamide" class="search-tag" onclick="closeMobileSearch()"><i class="fa-solid fa-sparkles text-emerald-400"></i> Niacinamide 10%</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Fixed Bottom Navigation Bar -->
+  <nav class="mobile-bottom-nav" aria-label="Mobile Quick Navigation">
+    <a href="/" class="mobile-bottom-item {% if request.path == '/' %}active{% endif %}">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </a>
+    <a href="/shop" class="mobile-bottom-item {% if request.path == '/shop' and not request.args.get('category') %}active{% endif %}">
+      <i class="fa-solid fa-flask-vial"></i>
+      <span>Shop</span>
+    </a>
+    <button type="button" class="mobile-bottom-item" onclick="openMobileSearch()">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <span>Search</span>
+    </button>
+    <a href="/wishlist" class="mobile-bottom-item {% if request.path == '/wishlist' %}active{% endif %}">
+      <div style="position: relative; display: inline-block;">
+        <i class="fa-regular fa-heart"></i>
+        <span class="mobile-nav-badge wishlist-badge-count" style="display: {% if wishlist_count and wishlist_count > 0 %}flex{% else %}none{% endif %};">
+          {{ wishlist_count if wishlist_count else 0 }}
+        </span>
+      </div>
+      <span>Saved</span>
+    </a>
+    <a href="javascript:void(0)" class="mobile-bottom-item open-cart-btn">
+      <div style="position: relative; display: inline-block;">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <span class="mobile-nav-badge cart-badge-count" style="display: {% if cart_count and cart_count > 0 %}flex{% else %}none{% endif %};">
+          {{ cart_count if cart_count else 0 }}
+        </span>
+      </div>
+      <span>Bag</span>
+    </a>
+    <a href="{% if session.get('user_id') %}/profile{% else %}/auth{% endif %}" class="mobile-bottom-item {% if request.path in ['/profile', '/auth'] %}active{% endif %}">
+      <i class="fa-solid fa-user"></i>
+      <span>{% if session.get('user_id') %}Account{% else %}Sign In{% endif %}</span>
+    </a>
+  </nav>
+
+  <!-- Floating WhatsApp & Skincare Consultation Widget -->
+  {% set wa_msg = store_settings.whatsapp_message if store_settings.whatsapp_message else 'Hi AURA Beauty Labs, I would like a consultation regarding skincare formulations' %}
+  <a href="https://wa.me/{{ clean_whatsapp_number }}?text={{ wa_msg | urlencode }}" 
+     target="_blank" 
+     rel="noopener noreferrer" 
+     class="whatsapp-float-btn" 
+     title="Ask a Skincare Specialist on WhatsApp" 
+     aria-label="WhatsApp Helpline">
+    <i class="fa-brands fa-whatsapp"></i>
+    <span class="whatsapp-float-text">Beauty Helpline</span>
+  </a>
+
+  <!-- Interactive Beauty Routine & Regimen Finder Modal -->
+  <div id="routine-analyzer-overlay" class="mobile-filter-sheet-overlay" onclick="closeRoutineAnalyzer()"></div>
+  <div id="routine-analyzer-modal" class="mobile-filter-sheet" style="max-height: 90vh;">
+    <div class="mobile-filter-sheet-header">
+      <h3 style="font-size: 1.15rem; color: #fff; display: flex; align-items: center; gap: 0.5rem;">
+        <i class="fa-solid fa-wand-magic-sparkles text-emerald-400"></i> Beauty Routine & Regimen Finder
+      </h3>
+      <button type="button" onclick="closeRoutineAnalyzer()" style="color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 4px;">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="mobile-filter-sheet-body">
+      <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+        Select your primary beauty goal for an instant matched formulation regimen.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <!-- Option 1: Radiance & Vitamin C -->
+        <a href="/shop?q=Vitamin+C" class="quiz-option-card" onclick="closeRoutineAnalyzer()">
+          <div style="width: 42px; height: 42px; border-radius: var(--radius-md); background: rgba(16, 185, 129, 0.15); display: flex; align-items: center; justify-content: center; color: #10b981; font-size: 1.2rem; flex-shrink: 0;">
+            <i class="fa-solid fa-sun"></i>
+          </div>
+          <div style="flex: 1;">
+            <h4 style="font-size: 0.95rem; color: #fff; margin-bottom: 0.15rem;">Radiance & Hyperpigmentation</h4>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">20% Vitamin C + Niacinamide active brightening</span>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 0.8rem;"></i>
+        </a>
+
+        <!-- Option 2: Anti-Aging & Retinol -->
+        <a href="/shop?q=Retinol" class="quiz-option-card" onclick="closeRoutineAnalyzer()">
+          <div style="width: 42px; height: 42px; border-radius: var(--radius-md); background: rgba(99, 102, 241, 0.15); display: flex; align-items: center; justify-content: center; color: var(--accent-primary); font-size: 1.2rem; flex-shrink: 0;">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </div>
+          <div style="flex: 1;">
+            <h4 style="font-size: 0.95rem; color: #fff; margin-bottom: 0.15rem;">Cellular Renewal & Anti-Aging</h4>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">1% Micro-Encapsulated Retinol + Peptides</span>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 0.8rem;"></i>
+        </a>
+
+        <!-- Option 3: Hair Loss & Scalp Health -->
+        <a href="/shop?category=haircare" class="quiz-option-card" onclick="closeRoutineAnalyzer()">
+          <div style="width: 42px; height: 42px; border-radius: var(--radius-md); background: rgba(6, 182, 212, 0.15); display: flex; align-items: center; justify-content: center; color: #06b6d4; font-size: 1.2rem; flex-shrink: 0;">
+            <i class="fa-solid fa-pump-soap"></i>
+          </div>
+          <div style="flex: 1;">
+            <h4 style="font-size: 0.95rem; color: #fff; margin-bottom: 0.15rem;">Hair Density & Scalp Strengthening</h4>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">Botanical Sulfate-Free Shampoos & Biotin</span>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 0.8rem;"></i>
+        </a>
+
+        <!-- Option 4: Barrier Repair -->
+        <a href="/shop?category=creams" class="quiz-option-card" onclick="closeRoutineAnalyzer()">
+          <div style="width: 42px; height: 42px; border-radius: var(--radius-md); background: rgba(245, 158, 11, 0.15); display: flex; align-items: center; justify-content: center; color: #f59e0b; font-size: 1.2rem; flex-shrink: 0;">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div style="flex: 1;">
+            <h4 style="font-size: 0.95rem; color: #fff; margin-bottom: 0.15rem;">Moisture Barrier & Dry Skin Repair</h4>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">Tri-Ceramide & Hyaluronic Intensive Creams</span>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 0.8rem;"></i>
+        </a>
+
+        <!-- Option 5: Collagen & Supplements -->
+        <a href="/shop?category=supplements" class="quiz-option-card" onclick="closeRoutineAnalyzer()">
+          <div style="width: 42px; height: 42px; border-radius: var(--radius-md); background: rgba(244, 63, 94, 0.15); display: flex; align-items: center; justify-content: center; color: #f43f5e; font-size: 1.2rem; flex-shrink: 0;">
+            <i class="fa-solid fa-capsules"></i>
+          </div>
+          <div style="flex: 1;">
+            <h4 style="font-size: 0.95rem; color: #fff; margin-bottom: 0.15rem;">Internal Health & Marine Collagen</h4>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">Hydrolyzed Peptide Complex for Skin Elasticity</span>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 0.8rem;"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript Engine -->
+  <script src="/static/js/main.js?v=20260918_mobile_v6"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
+
+
