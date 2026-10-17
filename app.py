@@ -776,15 +776,19 @@ def admin_dashboard():
     total_orders = query_db("SELECT COUNT(*) as count FROM orders", one=True)['count']
     total_products = query_db("SELECT COUNT(*) as count FROM products", one=True)['count']
     total_customers = query_db("SELECT COUNT(*) as count FROM users WHERE is_admin = 0", one=True)['count']
+    pending_orders = query_db("SELECT COUNT(*) as count FROM orders WHERE order_status IN ('Pending', 'Processing')", one=True)['count']
+    completed_orders = query_db("SELECT COUNT(*) as count FROM orders WHERE order_status IN ('Delivered', 'Completed')", one=True)['count']
 
-    recent_orders = query_db("SELECT * FROM orders ORDER BY created_at DESC LIMIT 6")
-    low_stock_products = query_db("SELECT * FROM products WHERE stock <= 15 ORDER BY stock ASC LIMIT 5")
+    recent_orders = query_db("SELECT * FROM orders ORDER BY created_at DESC LIMIT 8")
+    low_stock_products = query_db("SELECT * FROM products WHERE stock <= 15 ORDER BY stock ASC LIMIT 6")
 
     return render_template('admin/dashboard.html',
                            total_revenue=total_rev,
                            total_orders=total_orders,
                            total_products=total_products,
                            total_customers=total_customers,
+                           pending_orders=pending_orders,
+                           completed_orders=completed_orders,
                            recent_orders=recent_orders,
                            low_stock_products=low_stock_products)
 

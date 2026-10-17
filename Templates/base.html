@@ -100,8 +100,14 @@
             </span>
           </a>
 
-          <!-- User Account Dropdown -->
+          <!-- User Account & Admin Dropdown -->
           {% if session.get('user_id') %}
+            {% if session.get('is_admin') %}
+              <a href="/admin" class="btn btn-sm desktop-auth-btn" style="background: linear-gradient(135deg, #10b981, #059669); color: white; display: flex; align-items: center; gap: 0.4rem; font-weight: 600; box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);">
+                <i class="fa-solid fa-gauge-high"></i>
+                <span>Admin Dashboard</span>
+              </a>
+            {% endif %}
             <a href="/profile" class="btn btn-secondary btn-sm desktop-auth-btn" style="display: flex; align-items: center; gap: 0.4rem;">
               <i class="fa-solid fa-user-circle"></i>
               <span>{{ session.get('user_name', 'Account').split(' ')[0] }}</span>
@@ -110,6 +116,10 @@
               <i class="fa-solid fa-arrow-right-from-bracket" style="font-size: 0.85rem;"></i>
             </a>
           {% else %}
+            <a href="/admin" class="btn btn-secondary btn-sm desktop-auth-btn" style="display: flex; align-items: center; gap: 0.4rem; border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399;" title="Store Management">
+              <i class="fa-solid fa-shield-halved"></i>
+              <span>Admin</span>
+            </a>
             <a href="/auth" class="btn btn-primary btn-sm desktop-auth-btn" style="background: linear-gradient(135deg, #10b981, #059669);">
               <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In
             </a>
@@ -393,6 +403,12 @@
           <li>
             <a href="/auth" class="mobile-nav-item" onclick="closeMobileMenu()">
               <span><i class="fa-solid fa-arrow-right-to-bracket text-emerald-400"></i> Customer Login / Register</span>
+              <i class="fa-solid fa-chevron-right arrow"></i>
+            </a>
+          </li>
+          <li>
+            <a href="/admin" class="mobile-nav-item" style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.25);" onclick="closeMobileMenu()">
+              <span style="color: #34d399; font-weight: 600;"><i class="fa-solid fa-shield-halved"></i> Store Admin Portal</span>
               <i class="fa-solid fa-chevron-right arrow"></i>
             </a>
           </li>

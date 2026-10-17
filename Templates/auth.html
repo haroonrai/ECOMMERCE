@@ -36,15 +36,18 @@
 
       <!-- Quick Demo Login Buttons -->
       <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); text-align: center;">
-        <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">1-Click Demo Accounts</span>
+        <span style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">1-Click Instant Login</span>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem;">
-          <button type="button" class="btn btn-secondary btn-sm" onclick="fillCredentials('admin@store.com', 'admin123')">
-            <i class="fa-solid fa-shield-halved text-accent-primary"></i> Clinic Admin
+          <button type="button" class="btn btn-secondary btn-sm" onclick="quickLogin('admin@store.com', 'admin123')" style="border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; font-weight: 600;">
+            <i class="fa-solid fa-shield-halved"></i> Admin Login &rarr;
           </button>
-          <button type="button" class="btn btn-secondary btn-sm" onclick="fillCredentials('user@store.com', 'user123')">
-            <i class="fa-solid fa-user text-emerald-400"></i> Patient Demo
+          <button type="button" class="btn btn-secondary btn-sm" onclick="quickLogin('user@store.com', 'user123')">
+            <i class="fa-solid fa-user text-emerald-400"></i> Customer Demo
           </button>
         </div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.75rem; margin-bottom: 0;">
+          Admin Email: <code>admin@store.com</code> &bull; Password: <code>admin123</code>
+        </p>
       </div>
     </form>
 
@@ -102,6 +105,12 @@ function switchAuthTab(tab) {
     loginBtn.style.color = 'var(--text-muted)';
     loginBtn.style.borderBottom = 'none';
   }
+}
+
+function quickLogin(email, pass) {
+  document.getElementById('login-email-input').value = email;
+  document.getElementById('login-pass-input').value = pass;
+  document.getElementById('login-form').submit();
 }
 
 function fillCredentials(email, pass) {
